@@ -16,17 +16,40 @@ function persistCandidateFavorites() {
 function getDashboardProfile() {
   try { return JSON.parse(localStorage.getItem(candidateProfileStorageKey) || '{}'); } catch (error) { return {}; }
 }
+function hasProfileText(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
 function calculateCandidateProfileCompletion(profile) {
-  const sections = [
-    Boolean(profile.firstName && profile.lastName && profile.email),
-    Boolean(profile.province && profile.city),
-    Array.isArray(profile.education) && profile.education.some(item => item.institution && item.level),
-    Array.isArray(profile.experience) && profile.experience.some(item => item.position && item.company),
-    Array.isArray(profile.languages) && profile.languages.some(item => item.name && item.level),
-    Array.isArray(profile.certifications) && profile.certifications.some(item => item.name && item.issuer),
-    Array.isArray(profile.skills) && profile.skills.some(item => typeof item === 'string' ? item.trim() : item && item.name && item.name.trim())
-  ];
-  return Math.round(sections.filter(Boolean).length / sections.length * 100);
+  profile = profile && typeof profile === 'object' ? profile : {};
+  const checks = [];
+  const addTextCheck = value => checks.push(hasProfileText(value));
+  const getStartedEntries = entries => Array.isArray(entries) ? entries.filter(entry => entry && typeof entry === 'object' && Object.values(entry).some(value => {
+    if (typeof value === 'string') return value.trim().length > 0;
+    if (value && typeof value === 'object') return Boolean(value.data || value.name);
+    return value === true;
+  })) : [];
+  const addEntryChecks = (entries, requiredFields, completionChecks = []) => {
+    const startedEntries = getStartedEntries(entries);
+    checks.push(startedEntries.length > 0);
+    startedEntries.forEach(entry => {
+      requiredFields.forEach(field => addTextCheck(entry[field]));
+      completionChecks.forEach(check => checks.push(Boolean(check(entry))));
+    });
+  };
+
+  [profile.firstName, profile.lastName, profile.email, profile.phone, profile.province, profile.city].forEach(addTextCheck);
+  addEntryChecks(profile.education, ['institution', 'level', 'career', 'startDate'], [item => item.current === true || hasProfileText(item.endDate)]);
+  addEntryChecks(profile.experience, ['position', 'company', 'description', 'startDate'], [item => item.current === true || hasProfileText(item.endDate)]);
+  addEntryChecks(profile.languages, ['name', 'level']);
+  addEntryChecks(profile.certifications, ['name', 'issuer'], [item => Boolean(item.attachment && hasProfileText(item.attachment.data))]);
+
+  const skills = Array.isArray(profile.skills) ? profile.skills : [];
+  const startedSkills = skills.filter(skill => hasProfileText(typeof skill === 'string' ? skill : skill && skill.name));
+  checks.push(startedSkills.length > 0);
+  skills.filter(skill => !hasProfileText(typeof skill === 'string' ? skill : skill && skill.name)).forEach(() => checks.push(false));
+  startedSkills.forEach(() => checks.push(true));
+
+  return checks.length ? Math.round(checks.filter(Boolean).length / checks.length * 100) : 0;
 }
 function renderCandidateDashboardHome() {
   const percentElement = document.getElementById('dashboard-profile-percent');

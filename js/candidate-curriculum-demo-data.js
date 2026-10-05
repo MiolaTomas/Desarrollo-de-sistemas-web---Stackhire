@@ -1,0 +1,63 @@
+const CANDIDATE_CURRICULUM_DEMO_DATA = {
+  "firstName": "Tomas",
+  "lastName": "Miola",
+  "phone": "+543404653806",
+  "email": "tomasmiola@gmail.com",
+  "province": "Santa Fe",
+  "city": "Gálvez",
+  "linkedin": "",
+  "website": "https://tomasmiola.com.ar",
+  "github": "https://github.com/MiolaTomas",
+  "education": [
+    {
+      "institution": "Escuela superior de comercio n° 44",
+      "career": "Técnico en análisis funcional de sistemas",
+      "level": "Terciario",
+      "startDate": "2021-03-01",
+      "endDate": "",
+      "current": true
+    }
+  ],
+  "experience": [
+    {
+      "position": "Pasante administrativo",
+      "company": "Cooperativa eléctrica de Gálvez",
+      "description": "",
+      "startDate": "2023-01-05",
+      "endDate": "2023-12-05",
+      "current": false
+    },
+    {
+      "position": "Pasante administrativo",
+      "company": "Hache Viajes",
+      "description": "",
+      "startDate": "2026-09-01",
+      "endDate": "",
+      "current": true
+    }
+  ],
+  "languages": [
+    {
+      "name": "Inglés",
+      "level": "Avanzado"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Inglés nivel C2: Certificado oficial EF SET | Tomas Miola",
+      "description": "",
+      "issuer": "EF SET",
+      "attachment": null
+    }
+  ],
+  "skills": [
+    { "name": "Node.js" },
+    { "name": "TypeScript" },
+    { "name": "Tailwind CSS" },
+    { "name": "MySQL" },
+    { "name": "Express.js" },
+    { "name": "Vue.js" }
+  ]
+}
+;
+

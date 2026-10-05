@@ -20,7 +20,7 @@ const ARGENTINA_LOCATIONS = {
   'San Juan': ['San Juan', 'Rawson', 'Rivadavia', 'Caucete', 'San Jos\u00e9 de J\u00e1chal'],
   'San Luis': ['San Luis', 'Villa Mercedes', 'Merlo', 'La Toma', 'Quines'],
   'Santa Cruz': ['R\u00edo Gallegos', 'Caleta Olivia', 'El Calafate', 'Pico Truncado', 'Puerto Deseado'],
-  'Santa Fe': ['Rosario', 'Santa Fe', 'Rafaela', 'Reconquista', 'Venado Tuerto'],
+  'Santa Fe': ['Rosario', 'Santa Fe', 'Rafaela', 'Reconquista', 'Venado Tuerto', 'Gálvez'],
   'Santiago del Estero': ['Santiago del Estero', 'La Banda', 'Termas de R\u00edo Hondo', 'Fr\u00edas', 'A\u00f1atuya'],
   'Tierra del Fuego, Ant\u00e1rtida e Islas del Atl\u00e1ntico Sur': ['Ushuaia', 'R\u00edo Grande', 'Tolhuin'],
   'Tucum\u00e1n': ['San Miguel de Tucum\u00e1n', 'Taf\u00ed Viejo', 'Yerba Buena', 'Concepci\u00f3n', 'Banda del R\u00edo Sal\u00ed']
@@ -73,6 +73,27 @@ function loadCandidateCurriculum() {
   candidateCurriculumPhotoName = profile.photoName || '';
   updateCurriculumPhotoPreview();
   document.getElementById('curriculum-status').textContent = '';
+}
+
+function loadCandidateCurriculumDemo() {
+  const profile = CANDIDATE_CURRICULUM_DEMO_DATA;
+  document.getElementById('curriculum-first-name').value = profile.firstName;
+  document.getElementById('curriculum-last-name').value = profile.lastName;
+  document.getElementById('curriculum-phone').value = profile.phone;
+  document.getElementById('curriculum-email').value = profile.email;
+  document.getElementById('curriculum-linkedin').value = profile.linkedin;
+  document.getElementById('curriculum-website').value = profile.website;
+  document.getElementById('curriculum-github').value = profile.github;
+  document.getElementById('curriculum-province').value = profile.province;
+  updateCurriculumCities(profile.city);
+  renderCurriculumEntries('education', profile.education);
+  renderCurriculumEntries('experience', profile.experience);
+  renderCurriculumExtras('languages', profile.languages);
+  renderCurriculumExtras('certifications', profile.certifications);
+  renderCurriculumExtras('skills', profile.skills);
+  clearCurriculumPhoto();
+  document.getElementById('curriculum-status').textContent = '';
+  document.getElementById('curriculum-demo-status').textContent = 'Datos de prueba cargados. Guarda el currículum para conservarlos.';
 }
 
 function previewCurriculumPhoto(event) {
@@ -171,6 +192,7 @@ async function saveCandidateCurriculum(event) {
     document.getElementById('dashboard-user-name').textContent = fullName;
     document.getElementById('dashboard-welcome-title').textContent = `Bienvenido, ${fullName}`;
     document.getElementById('curriculum-status').textContent = 'Tu curr\u00edculum se guard\u00f3 en este navegador.';
+    renderCandidateDashboardHome();
   } catch (error) {
     document.getElementById('curriculum-status').textContent = 'No se pudo guardar. Prueba con una imagen m\u00e1s peque\u00f1a.';
   }

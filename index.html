@@ -570,7 +570,7 @@
             <div id="dashboard-detail-slot" class="hidden"></div>
                         <div id="dashboard-curriculum-slot" class="hidden">
               <section class="curriculum-panel">
-                <div class="curriculum-heading"><p class="dashboard-eyebrow">Tu perfil profesional</p><h2>Mi Curr&#237;culum</h2><p>Completa tus datos de contacto y agrega una foto para tu perfil.</p></div>
+                <div class="curriculum-heading"><p class="dashboard-eyebrow">Tu perfil profesional</p><div class="curriculum-title-row"><h2>Mi Curr&#237;culum</h2><button type="button" class="curriculum-demo-button" onclick="loadCandidateCurriculumDemo()">Cargar datos de prueba</button><span id="curriculum-demo-status" role="status" aria-live="polite"></span></div><p>Completa tus datos de contacto y agrega una foto para tu perfil.</p></div>
                 <form id="candidate-curriculum-form" onsubmit="saveCandidateCurriculum(event)">
                   <div class="curriculum-photo-row">
                     <div class="curriculum-photo-preview"><img id="curriculum-photo-preview" class="hidden" alt="Vista previa de tu foto de perfil"><span id="curriculum-photo-placeholder">Foto</span></div>
@@ -1704,6 +1704,10 @@
               Recursos
             </h4>
             <a href="#" class="footer-link">Newsletter</a>
+            <a class="footer-qr-link" href="https://stackhire-phi.vercel.app/#" target="_blank" rel="noopener noreferrer">
+              <img class="footer-qr-image" src="data/stackhire-site-qr.svg" alt="Código QR para abrir StackHire">
+              <span>Escaneá para visitar StackHire</span>
+            </a>
           </div>
         </div>
         <div
@@ -1756,6 +1760,7 @@
     <script src="js/jobs-render.js"></script>
     <script src="js/companies.js"></script>
     <script src="js/job-detail.js"></script>
+    <script src="js/candidate-curriculum-demo-data.js"></script>
     <script src="js/curriculum.js"></script>
     <script src="js/company-offer-demo-data.js"></script>
     <script src="js/company-dashboard.js"></script>
