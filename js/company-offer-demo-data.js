@@ -1,0 +1,74 @@
+const COMPANY_OFFER_DEMO_DATA = [
+  {
+    "title": "Especialista en Accesibilidad Digital",
+    "description": "Ayudá a que nuestros productos digitales sean inclusivos y fáciles de usar para todas las personas. Revisarás interfaces, documentarás hallazgos y trabajarás con diseño e ingeniería para aplicar buenas prácticas de accesibilidad web. Se valora experiencia con WCAG y lectores de pantalla.",
+    "province": "Ciudad Autónoma de Buenos Aires",
+    "city": "Ciudad Autónoma de Buenos Aires",
+    "schedule": "full time",
+    "contract": "indefinido",
+    "modality": "hibrida",
+    "shift": "fijo",
+    "startTime": "09:00",
+    "endTime": "18:00",
+    "experience": 3,
+    "salary": 1800000
+  },
+  {
+    "title": "Administrador/a de Plataformas Cloud",
+    "description": "Mantené y optimizá los entornos cloud de la compañía, automatizando tareas operativas y mejorando la observabilidad. Colaborarás con desarrollo y seguridad en despliegues confiables. Buscamos experiencia con servicios cloud, infraestructura como código y scripting.",
+    "province": "Buenos Aires",
+    "city": "La Plata",
+    "schedule": "full time",
+    "contract": "indefinido",
+    "modality": "remota",
+    "shift": "fijo",
+    "startTime": "10:00",
+    "endTime": "19:00",
+    "experience": 2,
+    "salary": 1600000
+  },
+  {
+    "title": "Consultor/a de Integraciones API",
+    "description": "Diseñá e implementá integraciones entre plataformas de clientes y nuestros servicios. Analizarás requerimientos, acompañarás pruebas y dejarás documentación clara para cada solución. Se requieren conocimientos de APIs REST, JSON y autenticación; valoramos experiencia con clientes.",
+    "province": "Córdoba",
+    "city": "Córdoba",
+    "schedule": "full time",
+    "contract": "temporal",
+    "modality": "presencial",
+    "shift": "rotativo",
+    "startTime": "08:00",
+    "endTime": "16:00",
+    "experience": 1,
+    "salary": 1250000
+  },
+  {
+    "title": "Redactor/a Técnico de Producto",
+    "description": "Convertí funcionalidades complejas en guías, tutoriales y documentación útil para clientes y equipos internos. Trabajarás con producto e ingeniería para mantener el contenido actualizado. Buscamos excelente redacción, atención al detalle y facilidad para aprender herramientas digitales.",
+    "province": "Santa Fe",
+    "city": "Rosario",
+    "schedule": "part time",
+    "contract": "contractor",
+    "modality": "hibrida",
+    "shift": "fijo",
+    "startTime": "09:00",
+    "endTime": "14:00",
+    "experience": 3,
+    "salary": 1100000
+  },
+  {
+    "title": "Analista de Gobierno y Calidad de Datos",
+    "description": "Colaborá en la definición de estándares, catálogo y controles de calidad para los datos de la organización. Trabajarás con distintas áreas para mejorar trazabilidad y documentación. Se valora experiencia con SQL, gestión de metadatos y comunicación con equipos multidisciplinarios.",
+    "province": "Mendoza",
+    "city": "Mendoza",
+    "schedule": "part time",
+    "contract": "pasantia",
+    "modality": "remota",
+    "shift": "fijo",
+    "startTime": "13:00",
+    "endTime": "18:00",
+    "experience": 0,
+    "salary": 700000
+  }
+]
+;
+

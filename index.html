@@ -79,10 +79,12 @@
             <a href="#" class="nav-link">Contacto</a>
           </div>
           <div class="flex items-center gap-3">
-            <a href="#" class="nav-link hidden md:block">Iniciar Sesión</a>
-            <button class="btn-primary px-4 py-2 text-sm">
-              Publicar Oferta
-            </button>
+            <a
+              href="#"
+              onclick="showLogin(); return false;"
+              class="btn-primary landing-publish-button inline-flex px-4 py-2 text-sm"
+              >Iniciar Sesión</a
+            >
           </div>
         </div>
       </div>
@@ -421,7 +423,590 @@
     </div>
     <!-- end #landing-page -->
 
+    <!-- ══════════════ INICIAR SESIÓN ══════════════ -->
+    <div id="login-section" class="page-hidden">
+      <section class="login-page hero-bg px-4 py-12 sm:py-20">
+        <div class="login-layout max-w-5xl mx-auto">
+          <div class="login-intro text-white">
+            <span class="announce-pill mb-5">Tu próxima oportunidad empieza acá</span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight mb-4">
+              Volvé a donde<br /><span class="text-blue-400">todo empieza.</span>
+            </h1>
+            <p class="text-blue-200/70 leading-relaxed max-w-md">
+              Accedé a tus ofertas guardadas, seguí tus postulaciones y descubrí nuevas oportunidades tech.
+            </p>
+            <div class="login-benefits mt-8 space-y-4">
+              <div class="flex items-center gap-3 text-blue-100 text-sm">
+                <span class="login-benefit-icon">✓</span> Tu perfil siempre listo para postularte
+              </div>
+              <div class="flex items-center gap-3 text-blue-100 text-sm">
+                <span class="login-benefit-icon">✓</span> Alertas con oportunidades relevantes
+              </div>
+              <div class="flex items-center gap-3 text-blue-100 text-sm">
+                <span class="login-benefit-icon">✓</span> Seguimiento de cada postulación
+              </div>
+            </div>
+          </div>
+
+          <div class="login-card">
+            <div class="mb-7">
+              <p class="text-blue-600 text-xs font-bold uppercase tracking-widest mb-2">Bienvenido de nuevo</p>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">Iniciar sesión</h2>
+              <p class="text-gray-500 text-sm">Ingresá a tu cuenta de StackHire.</p>
+            </div>
+            <form id="login-form" novalidate>
+              <div class="login-field mb-4">
+                <label for="login-email" class="modal-label">Email</label>
+                <input id="login-email" class="modal-input" type="email" autocomplete="email" placeholder="tu@email.com" required />
+                <p id="login-email-error" class="login-error" role="alert"></p>
+              </div>
+              <div class="login-field mb-2">
+                <div class="flex items-center justify-between gap-3">
+                  <label for="login-password" class="modal-label">Contraseña</label>
+                  <a href="#" class="login-forgot" onclick="return false;">¿La olvidaste?</a>
+                </div>
+                <div class="login-password-wrap">
+                  <input id="login-password" class="modal-input" type="password" autocomplete="current-password" placeholder="Ingresá tu contraseña" required minlength="6" />
+                  <button type="button" id="toggle-password" class="login-password-toggle" aria-label="Mostrar contraseña">Mostrar</button>
+                </div>
+                <p id="login-password-error" class="login-error" role="alert"></p>
+              </div>
+              <div class="demo-accounts" aria-label="Cuentas de demostraci&#243;n">
+                <p class="demo-accounts-title">Accesos r&#225;pidos de demostraci&#243;n</p>
+                <div class="demo-account-list">
+                  <button type="button" class="demo-account" onclick="selectDemoAccount('candidate')">
+                    <span class="demo-account-avatar candidate-avatar">T</span>
+                    <span class="demo-account-copy"><strong>Tom&#225;s</strong><small>Candidato</small></span>
+                  </button>
+                  <button type="button" class="demo-account" onclick="selectDemoAccount('company')">
+                    <span class="demo-account-avatar company-avatar-demo">ML</span>
+                    <span class="demo-account-copy"><strong>Mercado Libre</strong><small>Empresa</small></span>
+                  </button>
+                </div>
+              </div>
+              <p id="login-status" class="login-status" role="status"></p>
+              <button type="submit" class="btn-primary w-full py-3 mt-3">Ingresar a mi cuenta</button>
+            </form>
+            <div class="login-divider"><span>o</span></div>
+            <p class="text-center text-sm text-gray-500">
+              ¿Todavía no tenés cuenta?
+              <a href="#" class="font-semibold text-blue-600 hover:text-blue-800" onclick="showRegisterChoice(); return false;">Creá tu perfil gratis</a>
+            </p>
+            <button onclick="showLanding()" class="login-back">← Volver al inicio</button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- end #login-section -->
+    <div id="candidate-dashboard" class="page-hidden">
+      <div class="dashboard-layout">
+        <aside class="dashboard-sidebar">
+          <div class="dashboard-brand"><span class="dashboard-brand-mark">SH</span><span>StackHire</span></div>
+          <button class="dashboard-menu-toggle" type="button" aria-label="Abrir men&#250;" aria-expanded="false" aria-controls="candidate-dashboard-nav" onclick="toggleDashboardMenu(this)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <span class="dashboard-menu-toggle-label">Men&#250;</span>
+          </button>
+          <nav id="candidate-dashboard-nav" class="dashboard-side-nav" aria-label="Navegaci�n del panel">
+            <button id="dashboard-home-link" class="dashboard-nav-item active" type="button" onclick="showCandidateDashboard()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg>
+              <span>Inicio</span>
+            </button>
+            <button id="dashboard-offers-link" class="dashboard-nav-item" type="button" onclick="showCandidateOffers()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6M11 8v6"/></svg>
+              <span>Ofertas Laborales</span>
+            </button>
+            <button id="dashboard-curriculum-link" class="dashboard-nav-item" type="button" onclick="showCandidateCurriculum()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+              <span>Mi Curriculum</span>
+            </button>
+            <button id="dashboard-applications-link" class="dashboard-nav-item" type="button" onclick="showCandidateApplications()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/></svg>
+              <span>Mis Postulaciones</span>
+            </button>
+            <button id="dashboard-notifications-link" class="dashboard-nav-item" type="button" onclick="showCandidateNotifications()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+              <span>Notificaciones</span>
+              <span id="dashboard-notifications-count" class="dashboard-notification-badge hidden" aria-live="polite"></span>
+            </button>            <button id="dashboard-favorites-link" class="dashboard-nav-item" type="button" onclick="showCandidateFavorites()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/></svg>
+              <span>Favoritos</span>
+            </button>
+            <button class="dashboard-nav-item dashboard-logout" type="button" onclick="logoutCandidate()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3m9-9h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>
+              <span>Cerrar sesi&#243;n</span>
+            </button>
+          </nav>
+        </aside>
+        <main class="dashboard-main">
+          <header class="dashboard-navbar">
+            <div><p class="dashboard-eyebrow">Espacio de candidato</p><h1 id="dashboard-page-title">Panel de control</h1></div>
+            <div class="dashboard-user"><span class="dashboard-user-avatar">T</span><span id="dashboard-user-name">Tom&#225;s</span></div>
+          </header>
+          <section class="dashboard-content">
+            <div id="dashboard-home-content">
+            <div class="dashboard-welcome">
+              <p class="dashboard-eyebrow">Tu cuenta</p>
+              <h2 id="dashboard-welcome-title">Bienvenido, Tom&#225;s</h2>
+              <p>Desde aqu&#237; podr&#225;s gestionar tu perfil y seguir tus oportunidades laborales.</p>
+            </div>
+            <section class="dashboard-overview" aria-label="Resumen de tu cuenta">
+  <article class="dashboard-profile-card"><div class="dashboard-overview-heading"><div><p class="dashboard-eyebrow">Tu perfil</p><h3>Perfil completo</h3></div><strong id="dashboard-profile-percent">0%</strong></div>
+    <div class="dashboard-progress-track" role="progressbar" aria-label="Perfil completo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="dashboard-profile-progress"><span id="dashboard-profile-progress-bar"></span></div>
+    <p id="dashboard-profile-summary" class="dashboard-overview-caption">Completa tu curr&iacute;culum para mostrar tu experiencia.</p><button type="button" class="dashboard-text-link" onclick="showCandidateCurriculum()">Completar curr&iacute;culum</button>
+  </article>
+  <section class="dashboard-status-section" aria-label="Estado de postulaciones"><div class="dashboard-section-heading"><div><p class="dashboard-eyebrow">Tus procesos</p><h3>Postulaciones</h3></div><strong id="dashboard-applications-total">0 postulaciones</strong></div>
+    <div class="dashboard-status-grid">
+      <button type="button" class="dashboard-stat-card status-postulado" onclick="openApplicationsWithFilter('postulado')"><span>Postulado</span><strong id="dashboard-count-postulado">0</strong></button>
+      <button type="button" class="dashboard-stat-card status-visto" onclick="openApplicationsWithFilter('visto')"><span>Visto</span><strong id="dashboard-count-visto">0</strong></button>
+      <button type="button" class="dashboard-stat-card status-en_progreso" onclick="openApplicationsWithFilter('en_progreso')"><span>En progreso</span><strong id="dashboard-count-en_progreso">0</strong></button>
+      <button type="button" class="dashboard-stat-card status-finalista" onclick="openApplicationsWithFilter('finalista')"><span>Finalista</span><strong id="dashboard-count-finalista">0</strong></button>
+    </div>
+  </section>
+  <button type="button" class="dashboard-favorites-card" onclick="showCandidateFavorites()"><span class="dashboard-favorites-icon" aria-hidden="true">&#9825;</span><span><small>Ofertas guardadas</small><strong id="dashboard-favorites-count">0</strong></span><span class="dashboard-card-arrow" aria-hidden="true">&#8250;</span></button>
+  <section class="dashboard-activity-card"><div class="dashboard-section-heading"><div><p class="dashboard-eyebrow">Lo reciente</p><h3>Actividad reciente</h3></div><button type="button" class="dashboard-text-link" onclick="showCandidateApplications()">Ver todas</button></div><div id="dashboard-recent-activity" class="dashboard-recent-list" aria-live="polite"></div></section>
+</section>
+</div>
+<div id="dashboard-offers-slot" class="hidden"></div>
+            <div id="dashboard-detail-slot" class="hidden"></div>
+                        <div id="dashboard-curriculum-slot" class="hidden">
+              <section class="curriculum-panel">
+                <div class="curriculum-heading"><p class="dashboard-eyebrow">Tu perfil profesional</p><h2>Mi Curr&#237;culum</h2><p>Completa tus datos de contacto y agrega una foto para tu perfil.</p></div>
+                <form id="candidate-curriculum-form" onsubmit="saveCandidateCurriculum(event)">
+                  <div class="curriculum-photo-row">
+                    <div class="curriculum-photo-preview"><img id="curriculum-photo-preview" class="hidden" alt="Vista previa de tu foto de perfil"><span id="curriculum-photo-placeholder">Foto</span></div>
+                    <div class="curriculum-photo-controls">
+                      <label for="curriculum-photo-input" class="curriculum-photo-upload">
+                        <span class="curriculum-photo-upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span>
+                        <span class="curriculum-photo-upload-copy"><strong id="curriculum-photo-upload-title">Subir foto de perfil</strong><small id="curriculum-photo-upload-hint">JPG, PNG o similar &middot; hasta 2 MB</small></span>
+                        <span class="curriculum-photo-upload-action" id="curriculum-photo-upload-action">Elegir foto</span>
+                        <input id="curriculum-photo-input" class="curriculum-photo-file-input" type="file" accept="image/*" onchange="previewCurriculumPhoto(event)">
+                      </label>
+                      <button type="button" id="curriculum-photo-clear" class="curriculum-clear-photo curriculum-trash-button hidden" aria-label="Eliminar foto" title="Eliminar foto" onclick="clearCurriculumPhoto()"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg></button>
+                    </div>
+                  </div>
+                  <div class="curriculum-form-grid">
+                    <label>Nombre<input id="curriculum-first-name" name="firstName" type="text" autocomplete="given-name" required></label>
+                    <label>Apellido<input id="curriculum-last-name" name="lastName" type="text" autocomplete="family-name" required></label>
+                    <label>N&#250;mero de tel&#233;fono<input id="curriculum-phone" name="phone" type="tel" autocomplete="tel" placeholder="Ej. +52 55 1234 5678"></label>
+                    <label>Correo electr&#243;nico de contacto<input id="curriculum-email" name="email" type="email" autocomplete="email" required></label>
+                  </div>
+                  <section class="curriculum-links-section">
+                    <div class="curriculum-links-heading"><h3>Ubicaci&#243;n</h3><p>Indica d&#243;nde vives actualmente.</p></div>
+                    <div class="curriculum-form-grid">
+                      <label>Provincia<select id="curriculum-province" name="province" autocomplete="address-level1" onchange="updateCurriculumCities()"><option value="">Selecciona una provincia</option></select></label>
+                      <label>Ciudad<select id="curriculum-city" name="city" autocomplete="address-level2" disabled><option value="">Primero selecciona una provincia</option></select></label>
+                    </div>
+                  </section>
+                  <div class="curriculum-links-section">
+                    <div class="curriculum-links-heading"><h3>Enlaces profesionales</h3><p>Agrega tus perfiles o sitio web. Todos estos campos son opcionales.</p></div>
+                    <div class="curriculum-form-grid">
+                      <label>LinkedIn<input id="curriculum-linkedin" name="linkedin" type="url" autocomplete="url" placeholder="https://www.linkedin.com/in/tu-perfil"></label>
+                      <label>Sitio web<input id="curriculum-website" name="website" type="url" autocomplete="url" placeholder="https://tusitio.com"></label>
+                      <label>GitHub<input id="curriculum-github" name="github" type="url" autocomplete="url" placeholder="https://github.com/tu-usuario"></label>
+                    </div>
+                  </div>
+                  <section class="curriculum-links-section">
+                    <div class="curriculum-links-heading curriculum-repeatable-heading"><div><h3>Formaci&#243;n acad&#233;mica</h3><p>Agrega tus estudios; puedes incluir m&#225;s de una formaci&#243;n.</p></div><button type="button" class="curriculum-add-button" onclick="addCurriculumEntry('education')">+ Agregar estudio</button></div>
+                    <div id="curriculum-education-list" class="curriculum-entry-list"></div>
+                  </section>
+                  <section class="curriculum-links-section">
+                    <div class="curriculum-links-heading curriculum-repeatable-heading"><div><h3>Experiencia laboral</h3><p>Agrega tus empleos anteriores y actuales.</p></div><button type="button" class="curriculum-add-button" onclick="addCurriculumEntry('experience')">+ Agregar experiencia</button></div>
+                    <div id="curriculum-experience-list" class="curriculum-entry-list"></div>
+                  </section>
+                  <section class="curriculum-links-section">
+                    <div class="curriculum-links-heading curriculum-repeatable-heading"><div><h3>Idiomas</h3><p>Indica los idiomas que hablas y tu nivel.</p></div><button type="button" class="curriculum-add-button" onclick="addCurriculumExtra('languages')">+ Agregar idioma</button></div>
+                    <div id="curriculum-languages-list" class="curriculum-entry-list"></div>
+                  </section>
+                  <section class="curriculum-links-section">
+                    <div class="curriculum-links-heading curriculum-repeatable-heading"><div><h3>Certificaciones</h3><p>Agrega certificados y adjunta el archivo correspondiente (PDF o imagen, hasta 1 MB).</p></div><button type="button" class="curriculum-add-button" onclick="addCurriculumExtra('certifications')">+ Agregar certificaci&#243;n</button></div>
+                    <div id="curriculum-certifications-list" class="curriculum-entry-list"></div>
+                  </section>
+                  <section class="curriculum-links-section">
+                    <div class="curriculum-links-heading curriculum-repeatable-heading"><div><h3>Habilidades</h3><p>Agrega herramientas o conocimientos, por ejemplo Excel, Word o PowerPoint.</p></div><button type="button" class="curriculum-add-button" onclick="addCurriculumExtra('skills')">+ Agregar habilidad</button></div>
+                    <div id="curriculum-skills-list" class="curriculum-entry-list"></div>
+                  </section>
+                  <div class="curriculum-form-footer"><p id="curriculum-status" role="status" aria-live="polite"></p><button class="btn-primary curriculum-save-button" type="submit">Guardar curr&#237;culum</button></div>
+                </form>
+              </section>
+            </div>            
+<div id="dashboard-notifications-slot" class="hidden"><section class="dashboard-notifications"><div class="curriculum-heading"><p class="dashboard-eyebrow">Novedades de tus postulaciones</p><h2>Notificaciones</h2><p>Entrevistas y actualizaciones de tus procesos.</p></div><div id="candidate-notifications-list" class="candidate-notifications-list" aria-live="polite"></div></section></div>
+            <div id="dashboard-favorites-slot" class="hidden"><section class="dashboard-favorites"><p class="dashboard-favorites-description">Ofertas que guardaste para revisar m&#225;s tarde.</p><div id="favorites-list" aria-live="polite"></div></section></div>
+            <div id="dashboard-applications-slot" class="hidden"><section class="dashboard-applications"><div class="applications-toolbar"><p class="dashboard-favorites-description">Consulta las ofertas a las que te postulaste y el estado de cada proceso.</p><label for="applications-status-filter">Filtrar por estado<select id="applications-status-filter" onchange="renderCandidateApplications()"><option value="all">Todos los estados</option><option value="postulado">Postulado</option><option value="visto">Visto</option><option value="en_progreso">En progreso</option><option value="finalista">Finalista</option></select></label></div><div id="applications-list" aria-live="polite"></div></section></div>          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- ══════════════ ELEGIR REGISTRO ══════════════ -->
+    <div id="company-dashboard" class="page-hidden">
+      <div class="dashboard-layout">
+        <aside class="dashboard-sidebar">
+          <div class="dashboard-brand"><span class="dashboard-brand-mark">SH</span><span>StackHire</span></div>
+          <button class="dashboard-menu-toggle" type="button" aria-label="Abrir men&#250;" aria-expanded="false" aria-controls="company-dashboard-nav" onclick="toggleDashboardMenu(this)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <span class="dashboard-menu-toggle-label">Men&#250;</span>
+          </button>
+          <nav id="company-dashboard-nav" class="dashboard-side-nav" aria-label="Navegaci&#x00f3;n del panel de empresa">
+            <button id="company-dashboard-home-link" class="dashboard-nav-item active" type="button" onclick="showCompanyDashboard()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg>
+              <span>Inicio</span>
+            </button>
+            <button id="company-dashboard-profile-link" class="dashboard-nav-item" type="button" onclick="showCompanyProfile()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2z"/></svg>
+              <span>Perfil</span>
+            </button>
+            <button id="company-dashboard-offers-link" class="dashboard-nav-item" type="button" onclick="showCompanyOffers()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/></svg>
+              <span>Ofertas laborales</span>
+            </button>
+            <button class="dashboard-nav-item dashboard-logout" type="button" onclick="logoutCompany()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3m9-9h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>
+              <span>Cerrar sesi&#x00f3;n</span>
+            </button>
+          </nav>
+        </aside>
+        <main class="dashboard-main">
+          <header class="dashboard-navbar">
+            <div><p class="dashboard-eyebrow">Espacio de empresa</p><h1 id="company-dashboard-page-title">Inicio</h1></div>
+            <div class="dashboard-user"><span id="company-dashboard-avatar" class="dashboard-user-avatar">ML</span><span id="company-dashboard-user-name">Mercado Libre</span></div>
+          </header>
+          <section class="dashboard-content">
+            <div id="company-dashboard-home">
+              <div class="dashboard-welcome">
+                <p class="dashboard-eyebrow">Panel administrativo</p>
+                <h2 id="company-dashboard-welcome-title">Bienvenido, Mercado Libre</h2>
+                <p>Desde aqu&#x00ed; podr&#x00e1;s gestionar la informaci&#x00f3;n de tu empresa.</p>
+              </div>
+              <div class="dashboard-empty-card">
+                <span class="dashboard-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M9 7h2M13 7h2M9 11h2M13 11h2"/></svg></span>
+                <h3>Tu espacio de empresa</h3>
+                <p>Completa el perfil de Mercado Libre para que las personas conozcan mejor a tu empresa.</p>
+                <button type="button" class="dashboard-text-link" onclick="showCompanyProfile()">Completar perfil</button>
+              </div>
+            </div>
+            <div id="company-dashboard-offers" class="hidden">
+              <section class="company-offers-page">
+                <div class="company-offers-heading">
+                  <div><p class="dashboard-eyebrow">Gestión de talento</p><h2>Mis ofertas laborales</h2><p>Administra las oportunidades creadas por tu empresa.</p></div>
+                  <button type="button" class="company-create-offer-button" onclick="showCompanyOfferForm()">+ Crear nueva oferta</button>
+                </div>
+                <div class="company-offers-table-wrap">
+                  <table class="company-offers-table">
+                    <thead><tr><th>Oferta</th><th>Ubicaci&oacute;n</th><th>Detalle</th><th>Postulantes</th><th>Estado</th><th>Acciones</th></tr></thead>
+                    <tbody id="company-offers-list" aria-live="polite"></tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+            <div id="company-dashboard-offer-form" class="hidden">
+              <section class="curriculum-panel company-offer-form-panel">
+                <div class="company-offer-form-heading">
+                  <button type="button" class="company-offer-back-button" onclick="showCompanyOffers()">&#8592; Volver a mis ofertas</button>
+                  <div class="curriculum-heading"><p class="dashboard-eyebrow">Nueva oportunidad</p><h2 id="company-offer-form-title">Crear oferta laboral</h2><p id="company-offer-form-description">Completa los datos para agregar una nueva oferta a tu empresa.</p></div>
+                </div>
+                <form id="company-offer-form" onsubmit="saveCompanyOffer(event)">
+                  <div class="company-offer-demo-tools"><button type="button" class="company-offer-demo-button" onclick="fillCompanyOfferWithDemoData()">Cargar datos de prueba</button><span id="company-offer-demo-status" role="status" aria-live="polite"></span></div>
+                  <section class="curriculum-links-section company-offer-section">
+                    <div class="curriculum-links-heading"><h3>Informaci&oacute;n de la oferta</h3><p>Describe el puesto y sus condiciones principales.</p></div>
+                    <div class="curriculum-form-grid">
+                      <label class="company-profile-wide">T&iacute;tulo de oferta<input name="title" type="text" placeholder="Ej. Desarrollador Frontend Senior" required></label>
+                      <label class="company-profile-wide">Descripci&oacute;n<textarea name="description" rows="5" placeholder="Describe las responsabilidades, el equipo y lo que ofrece el puesto." required></textarea></label>
+                    </div>
+                  </section>
+                  <section class="curriculum-links-section company-offer-section">
+                    <div class="curriculum-links-heading"><h3>Ubicaci&oacute;n</h3><p>Selecciona d&oacute;nde se realizar&aacute; el trabajo.</p></div>
+                    <div class="curriculum-form-grid">
+                      <label>Provincia<select id="company-offer-province" name="province" required onchange="updateCompanyOfferCities()"><option value="">Selecciona una provincia</option></select></label>
+                      <label>Ciudad<select id="company-offer-city" name="city" required disabled><option value="">Primero selecciona una provincia</option></select></label>
+                    </div>
+                  </section>
+                  <section class="curriculum-links-section company-offer-section">
+                    <div class="curriculum-links-heading"><h3>Condiciones de trabajo</h3><p>Define jornada, contrato, modalidad y horario.</p></div>
+                    <div class="curriculum-form-grid">
+                      <label>Jornada<select name="schedule" required><option value="">Selecciona una jornada</option><option value="full time">Full time</option><option value="part time">Part time</option></select></label>
+                      <label>Tipo de contrato<select name="contract" required><option value="">Selecciona un contrato</option><option value="indefinido">Indefinido</option><option value="temporal">Temporal</option><option value="pasantia">Pasant&iacute;a</option><option value="contractor">Contractor</option></select></label>
+                      <label>Modalidad<select name="modality" required><option value="">Selecciona una modalidad</option><option value="presencial">Presencial</option><option value="remota">Remoto</option><option value="hibrida">H&iacute;brida</option></select></label>
+                      <label>Tipo de turno<select name="shift" required><option value="">Selecciona un turno</option><option value="fijo">Fijo</option><option value="rotativo">Rotativo</option><option value="nocturno">Nocturno</option><option value="mixto">Mixto</option></select></label>
+                      <label>Horario de entrada<input name="startTime" type="time" required></label>
+                      <label>Horario de salida<input name="endTime" type="time" required></label>
+                      <label>A&ntilde;os de experiencia<input name="experience" type="number" min="0" max="50" step="1" placeholder="Ej. 3" required></label>
+                      <label>Sueldo acordado (mensual)<input name="salary" type="number" min="0" step="1" placeholder="Ej. 1500000" required></label>
+                    </div>
+                  </section>
+                  <div class="curriculum-form-footer"><p id="company-offer-status" role="status" aria-live="polite"></p><button id="company-offer-submit" class="company-create-offer-button" type="submit">Guardar oferta</button></div>
+                </form>
+              </section>
+            </div>            <div id="company-dashboard-offer-detail" class="hidden">
+              <section class="company-offer-detail-panel">
+                <button type="button" class="company-offer-back-button" onclick="showCompanyOffers()">&#8592; Volver a mis ofertas</button>
+                <div id="company-offer-detail-content"></div>
+              </section>
+            </div>            <div id="company-dashboard-profile" class="hidden">
+              <section class="curriculum-panel company-profile-panel">
+                <div class="curriculum-heading"><p class="dashboard-eyebrow">Tu empresa</p><h2>Perfil de empresa</h2><p>Completa la informaci&#x00f3;n para presentar tu empresa en StackHire.</p></div>
+                <form id="company-profile-form" onsubmit="saveCompanyProfile(event)">
+                  <div class="curriculum-photo-row">
+                    <div class="curriculum-photo-preview company-profile-photo-preview"><img id="company-profile-photo-preview" class="hidden" alt="Vista previa del logo de la empresa"><span id="company-profile-photo-placeholder">Logo</span></div>
+                    <div class="curriculum-photo-controls">
+                      <label for="company-profile-photo-input" class="curriculum-photo-upload">
+                        <span class="curriculum-photo-upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span>
+                        <span class="curriculum-photo-upload-copy"><strong id="company-photo-upload-title">Subir imagen de empresa</strong><small id="company-photo-upload-hint">JPG, PNG o similar &middot; hasta 2 MB</small></span>
+                        <span class="curriculum-photo-upload-action" id="company-photo-upload-action">Elegir imagen</span>
+                        <input id="company-profile-photo-input" class="curriculum-photo-file-input" type="file" accept="image/*" onchange="previewCompanyPhoto(event)">
+                      </label>
+                      <button type="button" id="company-profile-photo-clear" class="curriculum-clear-photo curriculum-trash-button hidden" aria-label="Eliminar imagen de empresa" title="Eliminar imagen de empresa" onclick="clearCompanyPhoto()"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg></button>
+                    </div>
+                  </div>
+
+                  <section class="curriculum-links-section">
+                    <div class="curriculum-links-heading"><h3>Datos de la empresa</h3><p>Identificaci&#x00f3;n y actividad de tu organizaci&#x00f3;n.</p></div>
+                    <div class="curriculum-form-grid">
+                      <label>Nombre de la empresa<input id="company-profile-name" name="name" type="text" autocomplete="organization" required></label>
+                      <label>CUIT<input id="company-profile-cuit" name="cuit" type="text" inputmode="numeric" autocomplete="off" placeholder="30-12345678-9"></label>
+                      <label>Industria<input id="company-profile-industry" name="industry" type="text" placeholder="Ej. Comercio electr&#x00f3;nico"></label>
+                      <label>Tama&#x00f1;o de la empresa<select id="company-profile-size" name="size"><option value="">Selecciona el tama&#x00f1;o</option><option>1-10 empleados</option><option>11-50 empleados</option><option>51-200 empleados</option><option>201-500 empleados</option><option>501-1000 empleados</option><option>1000+ empleados</option></select></label>
+                      <label class="company-profile-wide">Descripci&#x00f3;n<textarea id="company-profile-description" name="description" rows="4" placeholder="Cuenta qu&#x00e9; hace tu empresa, sus productos y su equipo."></textarea></label>
+                    </div>
+                  </section>
+
+                  <section class="curriculum-links-section">
+                    <div class="curriculum-links-heading"><h3>Contacto y presencia</h3><p>Canales para que puedan conocer y contactar a tu empresa.</p></div>
+                    <div class="curriculum-form-grid">
+                      <label>Correo electr&#x00f3;nico<input id="company-profile-email" name="email" type="email" autocomplete="email" required></label>
+                      <label>Tel&#x00e9;fono<input id="company-profile-phone" name="phone" type="tel" autocomplete="tel" placeholder="Ej. +54 11 1234 5678"></label>
+                      <label>Sitio web<input id="company-profile-website" name="website" type="url" autocomplete="url" placeholder="https://www.empresa.com"></label>
+                      <label>LinkedIn<input id="company-profile-linkedin" name="linkedin" type="url" placeholder="https://www.linkedin.com/company/empresa"></label>
+                    </div>
+                  </section>
+
+                  <section class="curriculum-links-section">
+                    <div class="curriculum-links-heading"><h3>Ubicaci&#x00f3;n</h3><p>Indica la provincia, ciudad y direcci&#x00f3;n de tu empresa.</p></div>
+                    <div class="curriculum-form-grid">
+                      <label>Provincia<select id="company-profile-province" name="province" autocomplete="address-level1" onchange="updateCompanyCities()"><option value="">Selecciona una provincia</option></select></label>
+                      <label>Ciudad<select id="company-profile-city" name="city" autocomplete="address-level2" disabled><option value="">Primero selecciona una provincia</option></select></label>
+                      <label class="company-profile-wide">Direcci&#x00f3;n<input id="company-profile-address" name="address" type="text" autocomplete="street-address" placeholder="Calle, n&#x00fa;mero, piso u oficina"></label>
+                    </div>
+                  </section>
+                  <div class="curriculum-form-footer"><p id="company-profile-status" role="status" aria-live="polite"></p><button class="btn-primary curriculum-save-button" type="submit">Guardar perfil</button></div>
+                </form>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <!-- ══════════════ ELEGIR REGISTRO ══════════════ -->
+    <div id="register-choice-section" class="page-hidden">
+      <section class="register-page hero-bg px-4 py-12 sm:py-20">
+        <div class="register-layout max-w-4xl mx-auto">
+          <div class="text-center text-white">
+            <button onclick="showLogin()" class="register-back">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+              </svg>
+              Volver a iniciar sesión
+            </button>
+            <p class="text-blue-300 text-xs font-bold uppercase tracking-widest mb-3">Creá tu perfil</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight mb-4">¿Cómo querés usar StackHire?</h1>
+            <p class="text-blue-200/70 max-w-xl mx-auto leading-relaxed">
+              Elegí el tipo de cuenta que mejor se adapta a vos para empezar.
+            </p>
+          </div>
+
+          <div class="register-options">
+            <button type="button" class="register-option" onclick="showCandidateRegister()">
+              <span class="register-icon register-icon-candidate">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </span>
+              <span class="register-option-content">
+                <span class="register-option-title">Soy candidato</span>
+                <span class="register-option-description">Encontrá oportunidades, creá tu perfil y postulate a trabajos tech.</span>
+                <span class="register-option-link">Registrarme como candidato <span>→</span></span>
+              </span>
+            </button>
+            <button type="button" class="register-option" onclick="showCompanyRegister()">
+              <span class="register-icon register-icon-company">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2" />
+                </svg>
+              </span>
+              <span class="register-option-content">
+                <span class="register-option-title">Soy una empresa</span>
+                <span class="register-option-description">Publicá tus búsquedas y encontrá el talento que tu equipo necesita.</span>
+                <span class="register-option-link">Registrarme como empresa <span>→</span></span>
+              </span>
+            </button>
+          </div>
+          <p id="register-choice-status" class="register-choice-status" role="status"></p>
+        </div>
+      </section>
+    </div>
+    <!-- end #register-choice-section -->
+
+    <!-- ══════════════ REGISTRO CANDIDATO ══════════════ -->
+    <div id="candidate-register-section" class="page-hidden">
+      <section class="candidate-register-page hero-bg px-4 py-10 sm:py-16">
+        <div class="candidate-register-layout max-w-3xl mx-auto">
+          <div class="text-center text-white mb-6">
+            <button onclick="showRegisterChoice()" class="register-back">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+              </svg>
+              Volver a elegir tipo de cuenta
+            </button>
+            <p class="text-blue-300 text-xs font-bold uppercase tracking-widest mb-3">Perfil de candidato</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight mb-3">Creá tu cuenta</h1>
+            <p class="text-blue-200/70 max-w-xl mx-auto leading-relaxed">
+              Completá tus datos para descubrir oportunidades que se adapten a tu experiencia.
+            </p>
+          </div>
+
+          <div class="candidate-register-card">
+            <form id="candidate-register-form" novalidate>
+              <div class="candidate-form-section">
+                <h2 class="candidate-form-title">Tus datos</h2>
+                <div class="candidate-form-grid">
+                  <div class="candidate-form-field candidate-form-field-wide">
+                    <label for="candidate-name" class="modal-label">Nombre completo</label>
+                    <input id="candidate-name" class="modal-input" type="text" autocomplete="name" placeholder="Ej. Ada Lovelace" required />
+                    <p id="candidate-name-error" class="register-form-error"></p>
+                  </div>
+                  <div class="candidate-form-field">
+                    <label for="candidate-email" class="modal-label">Email</label>
+                    <input id="candidate-email" class="modal-input" type="email" autocomplete="email" placeholder="tu@email.com" required />
+                    <p id="candidate-email-error" class="register-form-error"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="candidate-form-section">
+                <h2 class="candidate-form-title">Protegé tu cuenta</h2>
+                <div class="candidate-form-grid">
+                  <div class="candidate-form-field">
+                    <label for="candidate-password" class="modal-label">Contraseña</label>
+                    <div class="candidate-password-wrap">
+                      <input id="candidate-password" class="modal-input" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" minlength="6" required />
+                      <button type="button" class="candidate-password-toggle" data-target="candidate-password" aria-label="Mostrar contraseña">Mostrar</button>
+                    </div>
+                    <p id="candidate-password-error" class="register-form-error"></p>
+                  </div>
+                  <div class="candidate-form-field">
+                    <label for="candidate-password-confirm" class="modal-label">Repetir contraseña</label>
+                    <div class="candidate-password-wrap">
+                      <input id="candidate-password-confirm" class="modal-input" type="password" autocomplete="new-password" placeholder="Repetí tu contraseña" minlength="6" required />
+                      <button type="button" class="candidate-password-toggle" data-target="candidate-password-confirm" aria-label="Mostrar contraseña">Mostrar</button>
+                    </div>
+                    <p id="candidate-password-confirm-error" class="register-form-error"></p>
+                  </div>
+                </div>
+              </div>
+
+              <label class="candidate-terms">
+                <input id="candidate-terms" type="checkbox" required />
+                <span>Acepto los términos y condiciones y la política de privacidad de StackHire.</span>
+              </label>
+              <p id="candidate-terms-error" class="register-form-error"></p>
+              <p id="candidate-register-status" class="candidate-register-status" role="status"></p>
+              <button type="submit" class="btn-primary w-full py-3 mt-4">Crear mi perfil</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- end #candidate-register-section -->
+
+    <!-- ══════════════ REGISTRO EMPRESA ══════════════ -->
+    <div id="company-register-section" class="page-hidden">
+      <section class="company-register-page hero-bg px-4 py-10 sm:py-16">
+        <div class="candidate-register-layout max-w-3xl mx-auto">
+          <div class="text-center text-white mb-6">
+            <button onclick="showRegisterChoice()" class="register-back">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+              </svg>
+              Volver a elegir tipo de cuenta
+            </button>
+            <p class="text-blue-300 text-xs font-bold uppercase tracking-widest mb-3">Cuenta de empresa</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight mb-3">Encontrá al próximo talento</h1>
+            <p class="text-blue-200/70 max-w-xl mx-auto leading-relaxed">
+              Creá la cuenta de tu empresa y empezá a publicar oportunidades tech.
+            </p>
+          </div>
+
+          <div class="candidate-register-card">
+            <form id="company-register-form" novalidate>
+              <div class="candidate-form-section">
+                <h2 class="candidate-form-title">Datos de la empresa</h2>
+                <div class="candidate-form-grid">
+                  <div class="candidate-form-field candidate-form-field-wide">
+                    <label for="company-name" class="modal-label">Nombre de la empresa</label>
+                    <input id="company-name" class="modal-input" type="text" autocomplete="organization" placeholder="Ej. StackHire Labs" required />
+                    <p id="company-name-error" class="register-form-error"></p>
+                  </div>
+                  <div class="candidate-form-field">
+                    <label for="company-email" class="modal-label">Email corporativo</label>
+                    <input id="company-email" class="modal-input" type="email" autocomplete="email" placeholder="equipo@empresa.com" required />
+                    <p id="company-email-error" class="register-form-error"></p>
+                  </div>
+                  <div class="candidate-form-field">
+                    <label for="company-website" class="modal-label">Sitio web <span class="company-optional">Opcional</span></label>
+                    <input id="company-website" class="modal-input" type="url" autocomplete="url" placeholder="https://tuempresa.com" />
+                    <p id="company-website-error" class="register-form-error"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="candidate-form-section">
+                <h2 class="candidate-form-title">Datos fiscales</h2>
+                <div class="candidate-form-grid">
+                  <div class="candidate-form-field candidate-form-field-wide">
+                    <label for="company-cuit" class="modal-label">CUIT</label>
+                    <input id="company-cuit" class="modal-input" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 30-12345678-9" maxlength="13" required />
+                    <p id="company-cuit-error" class="register-form-error"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="candidate-form-section">
+                <h2 class="candidate-form-title">Protegé tu cuenta</h2>
+                <div class="candidate-form-grid">
+                  <div class="candidate-form-field">
+                    <label for="company-password" class="modal-label">Contraseña</label>
+                    <div class="candidate-password-wrap">
+                      <input id="company-password" class="modal-input" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" minlength="6" required />
+                      <button type="button" class="candidate-password-toggle" data-target="company-password" aria-label="Mostrar contraseña">Mostrar</button>
+                    </div>
+                    <p id="company-password-error" class="register-form-error"></p>
+                  </div>
+                  <div class="candidate-form-field">
+                    <label for="company-password-confirm" class="modal-label">Repetir contraseña</label>
+                    <div class="candidate-password-wrap">
+                      <input id="company-password-confirm" class="modal-input" type="password" autocomplete="new-password" placeholder="Repetí tu contraseña" minlength="6" required />
+                      <button type="button" class="candidate-password-toggle" data-target="company-password-confirm" aria-label="Mostrar contraseña">Mostrar</button>
+                    </div>
+                    <p id="company-password-confirm-error" class="register-form-error"></p>
+                  </div>
+                </div>
+              </div>
+
+              <label class="candidate-terms">
+                <input id="company-terms" type="checkbox" required />
+                <span>Acepto los términos y condiciones y la política de privacidad de StackHire.</span>
+              </label>
+              <p id="company-terms-error" class="register-form-error"></p>
+              <p id="company-register-status" class="candidate-register-status" role="status"></p>
+              <button type="submit" class="btn-primary w-full py-3 mt-4">Crear cuenta de empresa</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- end #company-register-section -->
+
     <!-- ══════════════ SEARCH RESULTS PAGE ══════════════ -->
+    <div id="search-results-placeholder"></div>
     <div id="search-results-section" class="page-hidden">
       <!-- Results hero bar -->
       <div class="hero-bg py-6 px-4 sm:px-6 lg:px-8">
@@ -454,7 +1039,7 @@
             </button>
           </div>
           <button
-            onclick="showLanding()"
+            onclick="backFromResults()"
             class="mt-3 flex items-center gap-2 text-blue-300/70 hover:text-white text-sm transition-colors"
           >
             <svg
@@ -467,7 +1052,7 @@
             >
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
-            Volver al inicio
+            <span id="results-back-label">Volver al inicio</span>
           </button>
         </div>
       </div>
@@ -660,6 +1245,7 @@
                 Limpiar filtros
               </button>
             </div>
+            <div id="jobs-pagination" class="jobs-pagination" aria-label="Paginacion de ofertas"></div>
           </div>
         </div>
       </div>
@@ -738,6 +1324,7 @@
     </div>
 
     <!-- ══════════════ DETALLE OFERTA ══════════════ -->
+    <div id="detail-section-placeholder"></div>
     <div id="detalle-section" class="page-hidden">
       <!-- Header -->
       <div class="detail-hero py-10 px-4">
@@ -790,7 +1377,7 @@
             </div>
           </div>
           <!-- CTA bar -->
-          <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-white/10">
+          <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-white/10"><div id="detail-actions-buttons" class="flex flex-wrap gap-3">
             <button onclick="openApplyModal()" class="btn-apply-big">
               <svg
                 width="16"
@@ -835,6 +1422,12 @@
               </svg>
               Compartir
             </button>
+          </div>
+          <div id="detail-application-progress" class="application-progress hidden" aria-label="Progreso de la postulaci&#243;n">
+            <div class="application-progress-step" data-application-stage="postulado"><span class="application-progress-marker">1</span><span class="application-progress-label">Postulado</span><span class="application-progress-connector"></span></div>
+            <div class="application-progress-step" data-application-stage="visto"><span class="application-progress-marker">2</span><span class="application-progress-label">CV visto</span><span class="application-progress-connector"></span></div>
+            <div class="application-progress-step" data-application-stage="en_progreso"><span class="application-progress-marker">3</span><span class="application-progress-label">En proceso</span><span class="application-progress-connector"></span></div>
+            <div class="application-progress-step" data-application-stage="finalista"><span class="application-progress-marker">4</span><span class="application-progress-label">Finalista</span></div>
           </div>
         </div>
       </div>
@@ -907,7 +1500,7 @@
             </div>
 
             <!-- Sticky apply (desktop) -->
-            <div class="detail-card border-blue-100 bg-blue-50 hidden lg:block">
+            <div id="detail-apply-card" class="detail-card border-blue-100 bg-blue-50 hidden lg:block">
               <p class="font-bold text-gray-900 mb-1 text-sm">¿Te convence?</p>
               <p class="text-gray-500 text-xs mb-4">
                 Postulate en menos de 2 minutos. Tu perfil funciona como CV.
@@ -943,161 +1536,48 @@
     </div>
 
     <!-- ══════════════ APPLY MODAL ══════════════ -->
-    <div id="apply-modal" class="hidden">
-      <div class="modal-backdrop" onclick="closeApplyModal()"></div>
-      <div class="modal-box">
-        <!-- Step 1: Form -->
-        <div id="modal-step-1">
-          <div class="flex items-center justify-between mb-6">
-            <div>
-              <h2 class="text-lg font-bold text-gray-900">Postularte a</h2>
-              <p
-                id="modal-job-title"
-                class="text-blue-600 font-semibold text-sm"
-              ></p>
-            </div>
-            <button
-              onclick="closeApplyModal()"
-              class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 transition-colors"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-          <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="modal-label">Nombre *</label
-                ><input class="modal-input" type="text" placeholder="Ada" />
-              </div>
-              <div>
-                <label class="modal-label">Apellido *</label
-                ><input
-                  class="modal-input"
-                  type="text"
-                  placeholder="Lovelace"
-                />
-              </div>
-            </div>
-            <div>
-              <label class="modal-label">Email *</label
-              ><input
-                class="modal-input"
-                type="email"
-                placeholder="ada@email.com"
-              />
-            </div>
-            <div>
-              <label class="modal-label">LinkedIn</label
-              ><input
-                class="modal-input"
-                type="url"
-                placeholder="linkedin.com/in/tu-perfil"
-              />
-            </div>
-            <div>
-              <label class="modal-label">CV (PDF)</label>
-              <div
-                class="file-drop"
-                onclick="document.getElementById('cv-file').click()"
-              >
-                <svg
-                  class="mx-auto mb-2 text-gray-400"
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-                <p class="text-sm text-gray-500" id="cv-file-label">
-                  Arrastrá o hacé click para subir tu CV
-                </p>
-                <p class="text-xs text-gray-400 mt-1">PDF hasta 5MB</p>
-                <input
-                  type="file"
-                  id="cv-file"
-                  accept=".pdf"
-                  class="hidden"
-                  onchange="
-                    document.getElementById('cv-file-label').textContent =
-                      this.files[0]?.name || 'Arrastrá o hacé click'
-                  "
-                />
-              </div>
-            </div>
-            <div>
-              <label class="modal-label">Carta de presentación (opcional)</label
-              ><textarea
-                class="modal-input"
-                rows="3"
-                placeholder="Contale a la empresa por qué sos la persona ideal..."
-              ></textarea>
-            </div>
-          </div>
-          <div class="flex gap-3 mt-6">
-            <button
-              onclick="closeApplyModal()"
-              class="btn-save flex-1 justify-center"
-            >
-              Cancelar
-            </button>
-            <button
-              onclick="submitApplication()"
-              class="btn-apply-big flex-1 justify-center"
-            >
-              Enviar postulación
-            </button>
-          </div>
-        </div>
-        <!-- Step 2: Success -->
-        <div id="modal-step-2" class="hidden text-center py-4">
-          <div class="success-check">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#059669"
-              stroke-width="2.5"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <h2 class="text-xl font-bold text-gray-900 mb-2">
-            ¡Postulación enviada!
-          </h2>
-          <p class="text-gray-500 text-sm mb-1">
-            Tu aplicación fue enviada con éxito a
-            <strong id="modal-empresa-confirm"></strong>.
-          </p>
-          <p class="text-gray-400 text-xs mb-6">
-            Recibirás una respuesta en tu email en los próximos días.
-          </p>
-          <button
-            onclick="closeApplyModal()"
-            class="btn-apply-big w-full justify-center"
-          >
-            Cerrar
-          </button>
+    </div>
+    <dialog id="apply-modal" class="application-dialog" aria-labelledby="application-success-heading" onclick="if(event.target===this)closeApplyModal()">
+      <div class="modal-box application-success-modal" >
+        <div class="text-center py-4">
+          <div class="success-check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg></div>
+          <h2 id="application-success-heading" class="text-xl font-bold text-gray-900 mb-2">&#161;Postulaci&#243;n exitosa!</h2>
+          <p id="application-success-message" class="text-gray-500 text-sm mb-1"></p>
+          <p class="text-gray-400 text-xs mb-6">Puedes seguir el estado de esta postulaci&#243;n desde Mis Postulaciones.</p>
+          <form method="dialog" class="application-dialog-close-form"><button type="submit" class="btn-apply-big w-full justify-center">Entendido</button></form>
         </div>
       </div>
-    </div>
-
-    <!-- ══════════════ FOOTER (siempre visible) ══════════════ -->
+    </dialog>
+    <dialog id="company-delete-offer-modal" class="application-dialog company-delete-offer-dialog" aria-labelledby="company-delete-offer-heading" onclick="if(event.target===this)cancelDeleteCompanyOffer()">
+      <div class="modal-box company-delete-offer-box">
+        <div class="company-delete-offer-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6m4 4v6m4-6v6"/></svg></div>
+        <h2 id="company-delete-offer-heading">Eliminar oferta</h2>
+        <p id="company-delete-offer-message">&#191;Est&#225;s seguro de que quieres eliminar esta oferta?</p>
+        <div class="company-delete-offer-actions">
+          <button type="button" class="company-delete-confirm-button" onclick="confirmDeleteCompanyOffer()">S&#237;, eliminar</button>
+          <button type="button" class="company-delete-cancel-button" onclick="cancelDeleteCompanyOffer()">No, cancelar</button>
+        </div>
+      </div>
+    </dialog>
+    <dialog id="company-offer-success-modal" class="application-dialog company-offer-success-dialog" aria-labelledby="company-offer-success-heading" onclick="if(event.target===this)this.close()">
+      <div class="modal-box application-success-modal">
+        <div class="text-center py-4">
+          <div class="success-check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg></div>
+          <h2 id="company-offer-success-heading" class="text-xl font-bold text-gray-900 mb-2">&#161;Oferta guardada correctamente!</h2>
+          <p id="company-offer-success-message" class="text-gray-500 text-sm mb-6"></p>
+          <form method="dialog" class="application-dialog-close-form"><button type="submit" class="btn-apply-big w-full justify-center">Entendido</button></form>
+        </div>
+      </div>
+    </dialog>
+    <dialog id="company-offer-applicants-modal" class="application-dialog company-delete-offer-dialog" aria-labelledby="company-offer-applicants-heading" onclick="if(event.target===this)closeCompanyOfferApplicants()">
+      <div class="modal-box company-applicants-box">
+        <button type="button" class="company-applicants-close" aria-label="Cerrar" onclick="closeCompanyOfferApplicants()">&times;</button>
+        <p class="dashboard-eyebrow">Postulaciones recibidas</p>
+        <h2 id="company-offer-applicants-heading">Postulantes</h2>
+        <p id="company-offer-applicants-subtitle" class="company-applicants-subtitle"></p>
+        <div id="company-offer-applicants-content" class="company-applicants-content"></div>
+      </div>
+    </dialog>
     <footer class="footer-bg py-14 px-4">
       <div class="max-w-7xl mx-auto">
         <div
@@ -1269,12 +1749,61 @@
     <script src="js/data.js"></script>
     <script src="js/state.js"></script>
     <script src="js/navigation.js"></script>
+    <script src="js/login.js"></script>
+    <script src="js/candidate-register.js"></script>
+    <script src="js/company-register.js"></script>
     <script src="js/filters.js"></script>
     <script src="js/jobs-render.js"></script>
     <script src="js/companies.js"></script>
     <script src="js/job-detail.js"></script>
+    <script src="js/curriculum.js"></script>
+    <script src="js/company-offer-demo-data.js"></script>
+    <script src="js/company-dashboard.js"></script>
     <script src="js/apply-modal.js"></script>
+    <script src="js/dashboard-home.js"></script>
+    <script src="js/notifications.js"></script>
     <script src="js/init.js"></script>
+
+    <!-- ══════════════ ACCESIBILIDAD ══════════════ -->
+    <div id="accessibility-panel" class="accessibility-panel" aria-hidden="true">
+      <div class="accessibility-header">
+        <h2>Accesibilidad</h2>
+        <button type="button" class="accessibility-close" onclick="toggleAccessibilityPanel()" aria-label="Cerrar panel">×</button>
+      </div>
+      <div class="accessibility-options" role="group" aria-label="Opciones de accesibilidad">
+        <button type="button" class="accessibility-option" data-action="font-large" onclick="setAccessibilityFont('large')">
+          <span class="accessibility-option-icon">A+</span><span>Aumentar texto</span>
+        </button>
+        <button type="button" class="accessibility-option" data-action="font-xlarge" onclick="setAccessibilityFont('xlarge')">
+          <span class="accessibility-option-icon">A++</span><span>Texto muy grande</span>
+        </button>
+        <button type="button" class="accessibility-option" data-action="font-small" onclick="setAccessibilityFont('small')">
+          <span class="accessibility-option-icon">A-</span><span>Reducir texto</span>
+        </button>
+        <button type="button" class="accessibility-option" data-action="high-contrast" onclick="toggleAccessibilitySetting('high-contrast')">
+          <span class="accessibility-option-icon">◐</span><span>Alto contraste</span>
+        </button>
+        <button type="button" class="accessibility-option" data-action="grayscale" onclick="toggleAccessibilitySetting('grayscale')">
+          <span class="accessibility-option-icon">◑</span><span>Escala de grises</span>
+        </button>
+        <button type="button" class="accessibility-option" data-action="highlight-links" onclick="toggleAccessibilitySetting('highlight-links')">
+          <span class="accessibility-option-icon">↗</span><span>Resaltar enlaces</span>
+        </button>
+        <button type="button" class="accessibility-option" data-action="extra-spacing" onclick="toggleAccessibilitySetting('extra-spacing')">
+          <span class="accessibility-option-icon">↔</span><span>Aumentar espaciado</span>
+        </button>
+        <button type="button" class="accessibility-option" data-action="large-cursor" onclick="toggleAccessibilitySetting('large-cursor')">
+          <span class="accessibility-option-icon">↖</span><span>Cursor grande</span>
+        </button>
+        <button type="button" class="accessibility-option" data-action="stop-animations" onclick="toggleAccessibilitySetting('stop-animations')">
+          <span class="accessibility-option-icon">Ⅱ</span><span>Detener animaciones</span>
+        </button>
+      </div>
+      <button type="button" class="accessibility-reset" onclick="resetAccessibilitySettings()">↺ Restaurar configuración</button>
+    </div>
+    <button id="accessibility-button" type="button" class="accessibility-button" onclick="toggleAccessibilityPanel()" aria-label="Abrir opciones de accesibilidad" aria-expanded="false" title="Opciones de accesibilidad">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+    </button>
 
     <!-- ══════════════ CHAT WIDGET ══════════════ -->
     <!-- FAB toggle -->
@@ -1404,5 +1933,6 @@
 
     <!-- ══════════════ CHAT WIDGET (independiente, no depende del resto) ══════════════ -->
     <script src="js/chatbot.js"></script>
+    <script src="js/accessibility.js"></script>
   </body>
 </html>

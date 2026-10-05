@@ -15,7 +15,7 @@ function showDetalle(id) {
   document.getElementById('detail-empresa').textContent = j.empresa;
   document.getElementById('detail-ubicacion').textContent = j.ciudad + ', ' + j.provincia;
   document.getElementById('detail-salario-hero').textContent = fmtRange(j.salarioMin, j.salarioMax);
-  document.getElementById('detail-publicado').textContent = 'Publicado hace ' + DIAS[j.id-1] + ' días';
+  document.getElementById('detail-publicado').textContent = 'Publicado hace ' + (DIAS[j.id-1] ?? 0) + ' días';
 
   // Badges hero
   const bh = document.getElementById('detail-badges-hero');
@@ -72,15 +72,36 @@ function showDetalle(id) {
   `;
   document.getElementById('detail-ver-empresa-btn').onclick = () => searchByCompany(j.empresa);
 
+  updateDetailApplicationActions();
+
   // Save button state
   updateSaveButtons();
 
-  // Show section
-  hideAll();
-  document.getElementById('detalle-section').classList.remove('page-hidden');
+  // Show the details inside the candidate dashboard when opened there.
+  if (document.body.classList.contains('dashboard-mode')) {
+    document.getElementById('dashboard-home-content').classList.add('hidden');
+    document.getElementById('dashboard-offers-slot').classList.add('hidden');
+    document.getElementById('dashboard-favorites-slot').classList.add('hidden');
+    document.getElementById('dashboard-curriculum-slot').classList.add('hidden');
+    document.getElementById('dashboard-applications-slot').classList.add('hidden');
+    document.getElementById('dashboard-notifications-slot').classList.add('hidden');
+    const detailSlot = document.getElementById('dashboard-detail-slot');
+    detailSlot.classList.remove('hidden');
+    detailSlot.appendChild(document.getElementById('detalle-section'));
+    document.getElementById('detalle-section').classList.remove('page-hidden');
+    document.getElementById('dashboard-page-title').textContent = 'Detalle de oferta';
+    document.querySelectorAll('#candidate-dashboard .dashboard-nav-item').forEach(button => button.classList.remove('active'));
+    document.getElementById(candidateDashboardView === 'favorites'
+      ? 'dashboard-favorites-link'
+      : candidateDashboardView === 'applications'
+        ? 'dashboard-applications-link'
+        : 'dashboard-offers-link').classList.add('active');
+  } else {
+    hideAll();
+    document.getElementById('detalle-section').classList.remove('page-hidden');
+  }
   window.scrollTo({ top: 0 });
 }
-
 function updateSaveButtons() {
   const saved = savedJobs.has(currentJobId);
   ['','- 2'].forEach(suffix => {
@@ -100,6 +121,7 @@ function toggleSave() {
   if (!currentJobId) return;
   if (savedJobs.has(currentJobId)) savedJobs.delete(currentJobId);
   else savedJobs.add(currentJobId);
+  persistCandidateFavorites();
   updateSaveButtons();
 }
 
@@ -112,3 +134,27 @@ function shareJob() {
 }
 
 // ── Apply modal ─────────────────────────────
+
+function updateDetailApplicationActions() {
+  const openedFromApplications = document.body.classList.contains('dashboard-mode')
+    && candidateDashboardView === 'applications';
+  const application = openedFromApplications && typeof getCandidateApplications === 'function'
+    ? getCandidateApplications().find(item => Number(item.jobId) === Number(currentJobId))
+    : null;
+  const hasApplied = Boolean(application);
+  document.getElementById('detail-actions-buttons').classList.toggle('hidden', hasApplied);
+  document.getElementById('detail-application-progress').classList.toggle('hidden', !hasApplied);
+  document.getElementById('detail-apply-card').classList.toggle('hidden', hasApplied);
+  document.getElementById('detail-apply-card').classList.toggle('application-already-submitted', hasApplied);
+  if (!hasApplied) return;
+  const stages = ['postulado', 'visto', 'en_progreso', 'finalista'];
+  const activeIndex = Math.max(stages.indexOf(application.status), 0);
+  document.querySelectorAll('#detail-application-progress .application-progress-step').forEach((step, index) => {
+    step.classList.toggle('is-complete', index < activeIndex);
+    step.classList.toggle('is-current', index === activeIndex);
+    const marker = step.querySelector('.application-progress-marker');
+    marker.textContent = index < activeIndex ? '\u2713' : String(index + 1);
+    if (index === activeIndex) step.setAttribute('aria-current', 'step');
+    else step.removeAttribute('aria-current');
+  });
+}

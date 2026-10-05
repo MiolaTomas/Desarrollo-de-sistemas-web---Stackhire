@@ -6,7 +6,7 @@
 function renderCompanies() {
   // Aggregate job counts per company
   const companyMap = {};
-  JOBS.forEach(j => {
+  JOBS.filter(isJobVisibleToCandidates).forEach(j => {
     if (!companyMap[j.empresa]) {
       companyMap[j.empresa] = { empresa: j.empresa, logo: j.logo, logoColor: j.logoColor, logoText: j.logoText, roles: 0, tecnologias: new Set(), provincias: new Set(), modalidades: new Set() };
     }

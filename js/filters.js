@@ -11,11 +11,14 @@ const LABEL = {
   "full time": "Full time",
   "part time": "Part time",
   indefinido: "Indefinido",
+  temporal: "Temporal",
+  pasantia: "Pasant\u00eda",
+  contractor: "Contractor",
   "por proyecto": "Por proyecto",
 };
 
 function getUnique(key) {
-  return [...new Set(JOBS.map((j) => j[key]))].sort();
+  return [...new Set(JOBS.filter(isJobVisibleToCandidates).map((j) => j[key]))].sort();
 }
 
 function buildFilters() {
@@ -28,7 +31,7 @@ function buildFilters() {
 function buildCheckboxes(id, key, values) {
   document.getElementById(id).innerHTML = values
     .map((v) => {
-      const c = JOBS.filter((j) => j[key] === v).length;
+      const c = JOBS.filter((j) => isJobVisibleToCandidates(j) && j[key] === v).length;
       return `<div class="filter-option">
       <input type="checkbox" id="f-${key}-${v.replace(/ /g, "-")}" value="${v}" onchange="toggleFilter('${key}','${v}')">
       <label for="f-${key}-${v.replace(/ /g, "-")}">${LABEL[v] || v}</label>
@@ -39,6 +42,7 @@ function buildCheckboxes(id, key, values) {
 }
 
 function toggleFilter(key, value) {
+  state.jobsPage = 1;
   if (state[key].has(value)) state[key].delete(value);
   else state[key].add(value);
   renderJobs();
@@ -47,12 +51,14 @@ function toggleFilter(key, value) {
 }
 
 function updateExpLabel() {
+  state.jobsPage = 1;
   const v = parseInt(document.getElementById("exp-range").value);
   state.expMax = v;
   document.getElementById("exp-label").textContent =
     v >= 10 ? "Todos" : v + " años";
 }
 function updateSalaryLabel() {
+  state.jobsPage = 1;
   const v = parseInt(document.getElementById("salary-range").value);
   state.salaryMin = v;
   document.getElementById("salary-label").textContent =
@@ -60,6 +66,7 @@ function updateSalaryLabel() {
 }
 
 function clearAllFilters() {
+  state.jobsPage = 1;
   state.modalidad.clear();
   state.jornada.clear();
   state.contrato.clear();
@@ -82,6 +89,7 @@ function clearAllFilters() {
 function getFiltered() {
   const q = state.query.toLowerCase();
   return JOBS.filter((j) => {
+    if (!isJobVisibleToCandidates(j)) return false;
     if (q) {
       const hay = [
         j.tituloOferta,

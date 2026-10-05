@@ -184,6 +184,7 @@
     const matching =
       typeof JOBS !== "undefined"
         ? JOBS.filter((j) => {
+            if (!isJobVisibleToCandidates(j)) return false;
             const mMatch =
               modality === "Remota"
                 ? j.modalidad === "remota"
@@ -243,7 +244,7 @@
     cwReply(() => {
       const remotes =
         typeof JOBS !== "undefined"
-          ? JOBS.filter((j) => j.modalidad === "remota").slice(0, 4)
+          ? JOBS.filter((j) => isJobVisibleToCandidates(j) && j.modalidad === "remota").slice(0, 4)
           : [];
       const frag = document.createDocumentFragment();
       const lbl = document.createElement("span");
