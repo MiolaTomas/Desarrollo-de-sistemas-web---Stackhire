@@ -13,6 +13,30 @@ function toggleDashboardMenu(button) {
   button.setAttribute('aria-expanded', String(open));
   button.setAttribute('aria-label', open ? 'Cerrar menu' : 'Abrir menu');
 }
+function toggleLandingMenu() {
+  const nav = document.getElementById('landing-navbar');
+  const button = document.getElementById('landing-menu-toggle');
+  const menu = document.getElementById('landing-mobile-menu');
+  const isOpen = nav.classList.toggle('is-mobile-menu-open');
+  button.setAttribute('aria-expanded', String(isOpen));
+  button.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
+  menu.setAttribute('aria-hidden', String(!isOpen));
+  document.body.classList.toggle('landing-menu-open', isOpen);
+  if (isOpen) menu.querySelector('.landing-mobile-nav-link').focus();
+}
+function closeLandingMenu() {
+  const nav = document.getElementById('landing-navbar');
+  const button = document.getElementById('landing-menu-toggle');
+  const menu = document.getElementById('landing-mobile-menu');
+  if (!nav || !button || !menu) return;
+  const wasOpen = nav.classList.contains('is-mobile-menu-open');
+  nav.classList.remove('is-mobile-menu-open');
+  button.setAttribute('aria-expanded', 'false');
+  button.setAttribute('aria-label', 'Abrir menú');
+  menu.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('landing-menu-open');
+  if (wasOpen) button.focus();
+}
 function closeDashboardMenu(sidebar) {
   if (!sidebar) return;
   sidebar.classList.remove('is-menu-open');
@@ -30,7 +54,10 @@ document.addEventListener('click', event => {
   });
 });
 document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') document.querySelectorAll('.dashboard-sidebar.is-menu-open').forEach(closeDashboardMenu);
+  if (event.key === 'Escape') {
+    document.querySelectorAll('.dashboard-sidebar.is-menu-open').forEach(closeDashboardMenu);
+    closeLandingMenu();
+  }
 });
 function hideAll() { restoreCandidateDetail(); restoreCandidateOffers(); ALL_SECTIONS.forEach(id => document.getElementById(id).classList.add('page-hidden')); document.body.classList.remove('dashboard-mode'); }
 

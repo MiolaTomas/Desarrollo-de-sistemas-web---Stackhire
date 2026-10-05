@@ -13,12 +13,12 @@
   </head>
   <body>
     <!-- ══════════════ NAVBAR ══════════════ -->
-    <nav class="hero-bg sticky top-0 z-50 border-b border-white/10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+    <nav id="landing-navbar" class="landing-navbar hero-bg sticky top-0 z-50 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 landing-nav-shell">
+        <div class="flex items-center justify-between h-16 landing-nav-bar">
           <div
             class="flex items-center gap-2 cursor-pointer"
-            onclick="showLanding()"
+            onclick="closeLandingMenu(); showLanding()"
           >
             <div
               class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center"
@@ -78,14 +78,28 @@
             <a href="#" class="nav-link">Sobre Nosotros</a>
             <a href="#" class="nav-link">Contacto</a>
           </div>
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 landing-nav-actions">
             <a
               href="#"
               onclick="showLogin(); return false;"
               class="btn-primary landing-publish-button inline-flex px-4 py-2 text-sm"
               >Iniciar Sesión</a
             >
+            <button id="landing-menu-toggle" class="landing-mobile-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="landing-mobile-menu" onclick="toggleLandingMenu()">
+              <svg class="landing-menu-icon-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              <svg class="landing-menu-icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </button>
           </div>
+        </div>
+        <div id="landing-mobile-menu" class="landing-mobile-menu" aria-hidden="true">
+          <nav class="landing-mobile-menu-links" aria-label="Navegación principal">
+            <a href="#" class="landing-mobile-nav-link" onclick="closeLandingMenu(); showLanding(); return false;">Inicio</a>
+            <a href="#" class="landing-mobile-nav-link" onclick="closeLandingMenu(); buildFilters(); renderJobs(); showResults(); return false;">Ofertas</a>
+            <a href="#" class="landing-mobile-nav-link" onclick="closeLandingMenu(); showEmpresas(); return false;">Empresas</a>
+            <a href="#" class="landing-mobile-nav-link" onclick="closeLandingMenu(); return false;">Sobre Nosotros</a>
+            <a href="#" class="landing-mobile-nav-link" onclick="closeLandingMenu(); return false;">Contacto</a>
+          </nav>
+          <a href="#" class="btn-primary landing-mobile-login" onclick="closeLandingMenu(); showLogin(); return false;">Iniciar Sesión</a>
         </div>
       </div>
     </nav>
