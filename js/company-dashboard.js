@@ -2,13 +2,32 @@ const companyProfileStorageKey = 'stackhire-company-profile';
 let companyProfilePhoto = '';
 let companyProfilePhotoName = '';
 
+function getCompanyProfileStorageKey(email = getCurrentAccountEmail('company')) {
+  return getAccountStorageKey(companyProfileStorageKey, 'company', email);
+}
+
 function readCompanyProfile() {
-  try { return JSON.parse(localStorage.getItem(companyProfileStorageKey) || '{}'); }
+  try {
+    const profile = JSON.parse(localStorage.getItem(getCompanyProfileStorageKey()) || '{}');
+    return profile && typeof profile === 'object' ? profile : {};
+  }
   catch (error) { return {}; }
 }
 
+function getCompanyProfileByEmail(email) {
+  try {
+    const profile = JSON.parse(localStorage.getItem(getCompanyProfileStorageKey(email)) || '{}');
+    return profile && typeof profile === 'object' ? profile : {};
+  }
+  catch (error) { return {}; }
+}
+
+function companyScopedKey(key, email = getCurrentAccountEmail('company')) {
+  return getAccountStorageKey(key, 'company', email);
+}
+
 function companyDisplayName(profile = readCompanyProfile()) {
-  return profile.name || 'Mercado Libre';
+  return profile.name || currentAuthenticatedUserName || 'Mercado Libre';
 }
 
 function updateCompanyDashboardHeader(profile = readCompanyProfile()) {
@@ -20,7 +39,7 @@ function updateCompanyDashboardHeader(profile = readCompanyProfile()) {
 
 function showCompanyDashboard() {
   hideAll();
-  currentAuthenticatedUserType = 'company';
+  setAuthenticatedAccount('company', currentAuthenticatedUserEmail || demoAccountEmails.company, currentAuthenticatedUserName || 'Mercado Libre');
   document.getElementById('company-dashboard').classList.remove('page-hidden');
   document.body.classList.add('dashboard-mode');
   updateCompanyDashboardHeader();
@@ -32,9 +51,15 @@ function showCompanyProfile() {
   setCompanyDashboardView('company-dashboard-profile', 'Perfil');
   loadCompanyProfile();
 }
+function showCompanySettings() {
+  if (!document.body.classList.contains('dashboard-mode') || document.getElementById('company-dashboard').classList.contains('page-hidden')) return;
+  document.querySelectorAll('#company-dashboard .dashboard-nav-item').forEach(button => button.classList.remove('active'));
+  document.getElementById('company-dashboard-settings-link').classList.add('active');
+  showAccountSettings('company');
+}
 
 function logoutCompany() {
-  currentAuthenticatedUserType = null;
+  clearAuthenticatedAccount();
   document.getElementById('login-email').value = '';
   document.getElementById('login-password').value = '';
   showLanding();
@@ -42,12 +67,12 @@ function logoutCompany() {
 
 function loadCompanyProfile() {
   const profile = readCompanyProfile();
-  document.getElementById('company-profile-name').value = profile.name || 'Mercado Libre';
+  document.getElementById('company-profile-name').value = profile.name || companyDisplayName(profile);
   document.getElementById('company-profile-cuit').value = profile.cuit || '';
   document.getElementById('company-profile-industry').value = profile.industry || '';
   document.getElementById('company-profile-size').value = profile.size || '';
   document.getElementById('company-profile-description').value = profile.description || '';
-  document.getElementById('company-profile-email').value = profile.email || 'mercadolibre@gmail.com';
+  document.getElementById('company-profile-email').value = profile.email || getCurrentAccountEmail('company');
   document.getElementById('company-profile-phone').value = profile.phone || '';
   document.getElementById('company-profile-website').value = profile.website || '';
   document.getElementById('company-profile-linkedin').value = profile.linkedin || '';
@@ -148,8 +173,12 @@ function saveCompanyProfile(event) {
   profile.photo = companyProfilePhoto;
   profile.photoName = companyProfilePhotoName;
   try {
-    localStorage.setItem(companyProfileStorageKey, JSON.stringify(profile));
+    localStorage.setItem(getCompanyProfileStorageKey(), JSON.stringify(profile));
+    currentAuthenticatedUserName = profile.name;
     updateCompanyDashboardHeader(profile);
+    syncCompanyOffersToJobCatalog();
+    buildFilters();
+    renderJobs();
     document.getElementById('company-profile-status').textContent = 'El perfil de tu empresa se guard\u00f3 en este navegador.';
   } catch (error) {
     document.getElementById('company-profile-status').textContent = 'No se pudo guardar. Prueba con una imagen m\u00e1s peque\u00f1a.';
@@ -169,61 +198,88 @@ function readStoredCompanyValue(key, fallback) {
   } catch (error) { return fallback; }
 }
 function readCompanyOffers() {
-  const offers = readStoredCompanyValue(companyOffersStorageKey, []);
+  const offers = readStoredCompanyValue(companyScopedKey(companyOffersStorageKey), []);
   return Array.isArray(offers) ? offers : [];
 }
-function readCompanyOfferStatuses() {
-  const value = readStoredCompanyValue(companyOfferStatusesKey, {});
+function readCompanyOfferStatuses(email = getCurrentAccountEmail('company')) {
+  const value = readStoredCompanyValue(companyScopedKey(companyOfferStatusesKey, email), {});
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
 }
-function readCompanyOfferOverrides() {
-  const value = readStoredCompanyValue(companyOfferOverridesKey, {});
+function readCompanyOfferOverrides(email = getCurrentAccountEmail('company')) {
+  const value = readStoredCompanyValue(companyScopedKey(companyOfferOverridesKey, email), {});
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
 }
-function readDeletedCompanyOfferIds() {
-  const ids = readStoredCompanyValue(companyOfferDeletedKey, []);
+function readDeletedCompanyOfferIds(email = getCurrentAccountEmail('company')) {
+  const ids = readStoredCompanyValue(companyScopedKey(companyOfferDeletedKey, email), []);
   return Array.isArray(ids) ? ids.map(Number) : [];
 }
-function isCompanyOfferDeleted(id) {
-  return readDeletedCompanyOfferIds().includes(Number(id));
+function isCompanyOfferDeleted(id, email = getCurrentAccountEmail('company')) {
+  return readDeletedCompanyOfferIds(email).includes(Number(id));
 }
-function getCompanyOfferStatus(offer) {
-  const statuses = readCompanyOfferStatuses();
+function getCompanyOfferStatus(offer, email = getCurrentAccountEmail('company')) {
+  const statuses = readCompanyOfferStatuses(email);
   const key = String(offer.id);
   if (Object.prototype.hasOwnProperty.call(statuses, key)) return statuses[key] === 'active';
   return offer.active !== false;
 }
 function isJobVisibleToCandidates(job) {
   if (!job) return false;
-  if (job.companyManaged || job.companySeed || job.empresa === 'Mercado Libre' || readCompanyOffers().some(offer => Number(offer.id) === Number(job.id))) {
-    return !isCompanyOfferDeleted(job.id) && getCompanyOfferStatus(job);
-  }
+  if (job.companyManaged) return job.active !== false;
+  if (job.companySeed || job.empresa === 'Mercado Libre') return !isCompanyOfferDeleted(job.id, demoAccountEmails.company) && getCompanyOfferStatus(job, demoAccountEmails.company);
   return job.active !== false;
 }
 function getCompanySeedJobs() {
   return JOBS.filter(job => job.companySeed || (!job.companyManaged && job.empresa === 'Mercado Libre'));
 }
 function getCompanyOwnedOffers() {
-  const companyName = companyDisplayName();
-  const overrides = readCompanyOfferOverrides();
-  const samples = getCompanySeedJobs()
-    .filter(job => !isCompanyOfferDeleted(job.id))
-    .map(job => ({ ...job, ...(overrides[String(job.id)] || {}), empresa: companyName, companyManaged: true, companySeed: true }));
+  const isDemoCompany = getCurrentAccountEmail('company') === demoAccountEmails.company;
+  const overrides = readCompanyOfferOverrides(demoAccountEmails.company);
+  const samples = isDemoCompany ? getCompanySeedJobs()
+    .filter(job => !isCompanyOfferDeleted(job.id, demoAccountEmails.company))
+    .map(job => ({ ...job, ...(overrides[String(job.id)] || {}), empresa: companyDisplayName(), companyManaged: true, companySeed: true })) : [];
   const created = readCompanyOffers()
     .filter(offer => !isCompanyOfferDeleted(offer.id))
     .map(offer => ({ ...offer, companyManaged: true }));
   return [...created, ...samples].map(offer => ({ ...offer, active: getCompanyOfferStatus(offer) }));
 }
-function syncCompanyOffersToJobCatalog() {
-  const overrides = readCompanyOfferOverrides();
-  getCompanySeedJobs().forEach(job => {
-    Object.assign(job, overrides[String(job.id)] || {}, {
-      empresa: companyDisplayName(), companyManaged: true, companySeed: true,
-      active: getCompanyOfferStatus({ ...job, ...(overrides[String(job.id)] || {}) })
+
+function readAllCompanyOffers() {
+  const offers = [];
+  const prefix = `${companyOffersStorageKey}:`;
+  const storageKeys = [companyOffersStorageKey];
+  for (let index = 0; index < localStorage.length; index++) {
+    const key = localStorage.key(index);
+    if (key && key.startsWith(prefix)) storageKeys.push(key);
+  }
+  storageKeys.forEach(key => {
+    const ownerEmail = key === companyOffersStorageKey ? demoAccountEmails.company : key.slice(prefix.length);
+    const stored = readStoredCompanyValue(key, []);
+    if (!Array.isArray(stored)) return;
+    stored.forEach(offer => {
+      if (!offer || offer.id == null || isCompanyOfferDeleted(offer.id, ownerEmail)) return;
+      const ownerProfile = getCompanyProfileByEmail(ownerEmail);
+      offers.push({ ...offer, empresa: ownerProfile.name || offer.empresa, companyOwnerEmail: ownerEmail, companyManaged: true, active: getCompanyOfferStatus(offer, ownerEmail), tecnologias: Array.isArray(offer.tecnologias) ? offer.tecnologias : [] });
     });
   });
-  readCompanyOffers().forEach(offer => {
-    const normalized = { ...offer, companyManaged: true, active: getCompanyOfferStatus(offer), tecnologias: Array.isArray(offer.tecnologias) ? offer.tecnologias : [] };
+  return offers;
+}
+
+function syncCompanyOffersToJobCatalog() {
+  const overrides = readCompanyOfferOverrides(demoAccountEmails.company);
+  const demoCompanyName = getCompanyProfileByEmail(demoAccountEmails.company).name || 'Mercado Libre';
+  getCompanySeedJobs().forEach(job => {
+    Object.assign(job, overrides[String(job.id)] || {}, {
+      empresa: demoCompanyName, companyManaged: true, companySeed: true, companyOwnerEmail: demoAccountEmails.company,
+      active: !isCompanyOfferDeleted(job.id, demoAccountEmails.company) && getCompanyOfferStatus({ ...job, ...(overrides[String(job.id)] || {}) }, demoAccountEmails.company)
+    });
+  });
+  const allOffers = readAllCompanyOffers();
+  const storedOfferIds = new Set(allOffers.map(offer => Number(offer.id)));
+  JOBS.forEach(job => {
+    if (job.companyManaged && !job.companySeed && !storedOfferIds.has(Number(job.id))) job.active = false;
+  });
+  allOffers.forEach(offer => {
+    const normalized = { ...offer };
     const index = JOBS.findIndex(job => Number(job.id) === Number(offer.id));
     if (index < 0) JOBS.push(normalized);
     else Object.assign(JOBS[index], normalized);
@@ -282,6 +338,13 @@ function formatCompanyOfferSalary(value) {
   const amount = Number(value);
   return Number.isFinite(amount) && amount > 0 ? '$' + amount.toLocaleString('es-AR') + ' /mes' : 'Sueldo a convenir';
 }
+function createUniqueCompanyOfferId() {
+  const usedIds = new Set(JOBS.map(job => Number(job.id)));
+  readAllCompanyOffers().forEach(offer => usedIds.add(Number(offer.id)));
+  let id = Date.now();
+  while (usedIds.has(id)) id += 1;
+  return id;
+}
 function renderCompanyOffers() {
   const list = document.getElementById('company-offers-list');
   const offers = getCompanyOwnedOffers();
@@ -308,8 +371,8 @@ function getCompanyOfferApplicants(id) {
       if (!Array.isArray(applications)) continue;
       const application = applications.find(item => Number(item.jobId) === Number(id));
       if (!application) continue;
-      const profile = readStoredCompanyValue('stackhire-candidate-profile', {});
       const email = storageKey.slice(prefix.length);
+      const profile = getCandidateProfileByEmail(email);
       const name = [profile.firstName, profile.lastName].filter(Boolean).join(' ') || (email === 'tomasmiola@gmail.com' ? 'Tomás Miola' : email.split('@')[0]);
       applicants.push({ storageKey, email, name, application });
     } catch (error) {}
@@ -400,7 +463,7 @@ function saveCompanyInterview(event, index) {
 function showCompanyApplicantProfile(index) {
   const applicant = activeCompanyOfferApplicants[index];
   if (!applicant) return;
-  const profile = readStoredCompanyValue('stackhire-candidate-profile', {});
+  const profile = getCandidateProfileByEmail(applicant.email);
   const name = [profile.firstName, profile.lastName].filter(Boolean).join(' ') || applicant.name;
   const esc = escapeCompanyOfferText;
   const photo = typeof profile.photo === 'string' && /^data:image\/(png|jpeg|webp|gif);base64,/i.test(profile.photo)
@@ -468,11 +531,11 @@ function updateCompanyOfferStatus(id, value) {
     const index = offers.findIndex(offer => Number(offer.id) === Number(id));
     if (index >= 0) {
       offers[index].active = active;
-      localStorage.setItem(companyOffersStorageKey, JSON.stringify(offers));
+      localStorage.setItem(companyScopedKey(companyOffersStorageKey), JSON.stringify(offers));
     } else {
       const statuses = readCompanyOfferStatuses();
       statuses[String(id)] = active ? 'active' : 'inactive';
-      localStorage.setItem(companyOfferStatusesKey, JSON.stringify(statuses));
+      localStorage.setItem(companyScopedKey(companyOfferStatusesKey), JSON.stringify(statuses));
     }
     syncCompanyOffersToJobCatalog();
     renderCompanyOffers();
@@ -502,10 +565,10 @@ function confirmDeleteCompanyOffer() {
   if (dialog.open) dialog.close();
   try {
     const offers = readCompanyOffers().filter(item => Number(item.id) !== id);
-    localStorage.setItem(companyOffersStorageKey, JSON.stringify(offers));
+    localStorage.setItem(companyScopedKey(companyOffersStorageKey), JSON.stringify(offers));
     const deleted = readDeletedCompanyOfferIds();
     if (!deleted.includes(id)) deleted.push(id);
-    localStorage.setItem(companyOfferDeletedKey, JSON.stringify(deleted));
+    localStorage.setItem(companyScopedKey(companyOfferDeletedKey), JSON.stringify(deleted));
     syncCompanyOffersToJobCatalog();
     renderCompanyOffers();
     buildFilters();
@@ -562,7 +625,7 @@ function saveCompanyOffer(event) {
   if (!form.reportValidity()) return;
   const values = Object.fromEntries(new FormData(form).entries());
   const previous = editingCompanyOfferId === null ? null : getCompanyOwnedOffers().find(item => Number(item.id) === editingCompanyOfferId);
-  const id = editingCompanyOfferId === null ? Date.now() : editingCompanyOfferId;
+  const id = editingCompanyOfferId === null ? createUniqueCompanyOfferId() : editingCompanyOfferId;
   const fields = {
     id,
     tituloOferta: values.title.trim(),
@@ -586,7 +649,8 @@ function saveCompanyOffer(event) {
     tecnologias: [],
     createdAt: previous?.createdAt || new Date().toISOString(),
     active: previous ? getCompanyOfferStatus(previous) : true,
-    companyManaged: true
+    companyManaged: true,
+    companyOwnerEmail: getCurrentAccountEmail('company')
   };
   try {
     const sample = getCompanySeedJobs().some(job => Number(job.id) === id);
@@ -595,11 +659,11 @@ function saveCompanyOffer(event) {
       const index = offers.findIndex(item => Number(item.id) === id);
       if (index >= 0) offers[index] = { ...offers[index], ...fields };
       else offers.unshift(fields);
-      localStorage.setItem(companyOffersStorageKey, JSON.stringify(offers));
+      localStorage.setItem(companyScopedKey(companyOffersStorageKey), JSON.stringify(offers));
     } else {
       const overrides = readCompanyOfferOverrides();
       overrides[String(id)] = fields;
-      localStorage.setItem(companyOfferOverridesKey, JSON.stringify(overrides));
+      localStorage.setItem(companyScopedKey(companyOfferOverridesKey), JSON.stringify(overrides));
     }
     editingCompanyOfferId = null;
     syncCompanyOffersToJobCatalog();

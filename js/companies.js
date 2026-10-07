@@ -8,7 +8,7 @@ function renderCompanies() {
   const companyMap = {};
   JOBS.filter(isJobVisibleToCandidates).forEach(j => {
     if (!companyMap[j.empresa]) {
-      companyMap[j.empresa] = { empresa: j.empresa, logo: j.logo, logoColor: j.logoColor, logoText: j.logoText, roles: 0, tecnologias: new Set(), provincias: new Set(), modalidades: new Set() };
+      companyMap[j.empresa] = { empresa: j.empresa, logo: j.logo, logoColor: j.logoColor, logoText: j.logoText, profile: j.companyOwnerEmail ? getCompanyProfileByEmail(j.companyOwnerEmail) : {}, roles: 0, tecnologias: new Set(), provincias: new Set(), modalidades: new Set() };
     }
     companyMap[j.empresa].roles++;
     j.tecnologias.forEach(t => companyMap[j.empresa].tecnologias.add(t));
@@ -66,26 +66,26 @@ function renderCompanies() {
     <div class="company-card">
       ${isEco ? `<div class="eco-badge" title="Empresa certificada Eco Friendly">${ECO_SVG}</div>` : ''}
       <div class="flex items-center gap-4 mb-4" style="${isEco ? 'padding-right:60px' : ''}">
-        <div class="company-big-logo" style="background:${c.logoColor};color:${c.logoText}">${c.logo}</div>
+        ${c.profile.photo ? `<img class="company-big-logo" src="${escapeHTML(c.profile.photo)}" alt="Logo de ${escapeHTML(c.empresa)}">` : `<div class="company-big-logo" style="background:${c.logoColor};color:${c.logoText}">${escapeHTML(c.logo)}</div>`}
         <div>
-          <h3 class="font-bold text-gray-900 text-base">${c.empresa}</h3>
-          <span class="industry-tag">${INDUSTRIES[c.empresa]||'Tecnología'}</span>
+          <h3 class="font-bold text-gray-900 text-base">${escapeHTML(c.empresa)}</h3>
+          <span class="industry-tag">${escapeHTML(INDUSTRIES[c.empresa]||c.profile.industry||'Tecnología')}</span>
         </div>
       </div>
-      <p class="text-gray-500 text-sm leading-relaxed mb-4">${DESCS[c.empresa]||'Empresa tecnológica líder en el mercado.'}</p>
+      <p class="text-gray-500 text-sm leading-relaxed mb-4">${escapeHTML(c.profile.description||DESCS[c.empresa]||'Empresa tecnológica líder en el mercado.')}</p>
       <div class="flex flex-wrap gap-1 mb-4">
-        ${techs.map(t => `<span class="badge badge-tech">${t}</span>`).join('')}
+        ${techs.map(t => `<span class="badge badge-tech">${escapeHTML(t)}</span>`).join('')}
       </div>
       <div class="flex items-center justify-between text-xs text-gray-400 mb-5 border-t border-gray-100 pt-4">
-        <span>📍 ${provList}</span>
-        <span>🏢 ${modalList}</span>
+        <span>📍 ${escapeHTML(provList)}</span>
+        <span>🏢 ${escapeHTML(modalList)}</span>
       </div>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1.5">
           <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-700 rounded-full font-bold text-xs">${c.roles}</span>
           <span class="text-gray-500 text-sm">${c.roles === 1 ? 'puesto abierto' : 'puestos abiertos'}</span>
         </div>
-        <button onclick="searchByCompany('${c.empresa}')" class="open-roles-btn">
+        <button data-company-name="${escapeHTML(c.empresa)}" onclick="searchByCompany(this.dataset.companyName)" class="open-roles-btn">
           Ver ofertas
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>

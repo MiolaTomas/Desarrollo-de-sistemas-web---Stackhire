@@ -11,29 +11,32 @@ const jornadaBadge   = j => j === 'part time' ? '<span class="badge badge-partti
 const contratoBadge  = c => ({ indefinido:'<span class="badge badge-indefinido">Indefinido</span>', temporal:'<span class="badge badge-temporal">Temporal</span>', pasantia:'<span class="badge badge-pasantia">Pasant\u00eda</span>', contractor:'<span class="badge badge-contractor">Contractor</span>', 'por proyecto':'<span class="badge badge-proyecto">Por proyecto</span>' }[c] || '');
 
 function cardHTML(j, showFavoriteRemove = false) {
+  const hasApplied = currentAuthenticatedUserType === 'candidate'
+    && typeof getCandidateApplications === 'function'
+    && getCandidateApplications().some(application => Number(application.jobId) === Number(j.id));
   return `<div class="job-card" onclick="showDetalle(${j.id})">
     <div class="flex items-start gap-4">
-      <div class="company-logo-sm" style="background:${j.logoColor};color:${j.logoText}">${j.logo}</div>
+      <div class="company-logo-sm" style="background:${j.logoColor};color:${j.logoText}">${escapeHTML(j.logo)}</div>
       <div class="flex-1 min-w-0">
         <div class="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h3 class="font-semibold text-gray-900 text-base leading-snug">${j.tituloOferta}</h3>
-            <p class="text-gray-400 text-sm mt-0.5">${j.empresa} · ${j.ciudad}, ${j.provincia}</p>
+            <h3 class="font-semibold text-gray-900 text-base leading-snug">${escapeHTML(j.tituloOferta)}</h3>
+            <p class="text-gray-400 text-sm mt-0.5">${escapeHTML(j.empresa)} · ${escapeHTML(j.ciudad)}, ${escapeHTML(j.provincia)}</p>
           </div>
           <div class="job-card-actions flex-shrink-0">
             <div class="job-card-primary-action">
               <span class="text-gray-400 text-xs whitespace-nowrap">hace ${(DIAS[j.id-1] ?? 0)} d&#237;as</span>
-              <button class="btn-primary px-5 py-2 text-sm rounded-lg" onclick="event.stopPropagation();openApplyModalForId(${j.id})">Postularse</button>
+              <button type="button" class="btn-primary job-apply-button px-5 py-2 text-sm rounded-lg${hasApplied ? ' is-applied' : ''}" onclick="event.stopPropagation();openApplyModalForId(${j.id})">${hasApplied ? 'Ya postulado' : 'Postularse'}</button>
             </div>
             ${showFavoriteRemove ? `<button type="button" class="favorite-remove" onclick="event.stopPropagation();removeFavoriteJob(${j.id})"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg><span>Quitar de favoritos</span></button>` : ''}
           </div>
         </div>
-        <p class="text-gray-500 text-sm leading-relaxed mt-2 mb-3">${j.descripcion}</p>
+        <p class="text-gray-500 text-sm leading-relaxed mt-2 mb-3">${escapeHTML(j.descripcion)}</p>
         <div class="flex flex-wrap gap-1.5 mb-2">
           ${modalidadBadge(j.modalidad)} ${jornadaBadge(j.jornada)} ${contratoBadge(j.tipoContrato)}
         </div>
         <div class="flex flex-wrap gap-1 mb-3">
-          ${j.tecnologias.map(t=>`<span class="badge badge-tech">${t}</span>`).join('')}
+          ${j.tecnologias.map(t=>`<span class="badge badge-tech">${escapeHTML(t)}</span>`).join('')}
         </div>
         <div class="flex items-center justify-between border-t border-gray-100 pt-3">
           <p class="font-bold text-gray-900 text-sm">${fmtRange(j.salarioMin,j.salarioMax)} <span class="font-normal text-gray-400">/mes</span></p>

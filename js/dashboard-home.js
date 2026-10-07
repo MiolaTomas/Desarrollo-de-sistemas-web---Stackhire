@@ -1,6 +1,6 @@
 // Dashboard home widgets and per-candidate favorite persistence.
 function candidateFavoritesStorageKey() {
-  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const email = getCurrentAccountEmail('candidate');
   return 'stackhire-candidate-favorites:' + (email || 'demo-candidate');
 }
 function loadCandidateFavorites() {
@@ -14,7 +14,7 @@ function persistCandidateFavorites() {
   try { localStorage.setItem(candidateFavoritesStorageKey(), JSON.stringify([...savedJobs])); } catch (error) {}
 }
 function getDashboardProfile() {
-  try { return JSON.parse(localStorage.getItem(candidateProfileStorageKey) || '{}'); } catch (error) { return {}; }
+  return getCandidateProfileByEmail(getCurrentAccountEmail('candidate'));
 }
 function hasProfileText(value) {
   return typeof value === 'string' && value.trim().length > 0;
@@ -77,7 +77,7 @@ function renderCandidateDashboardHome() {
     const status = applicationStatuses[application.status] || applicationStatuses.postulado;
     const date = application.appliedAt ? new Date(application.appliedAt) : null;
     const dateLabel = date && !Number.isNaN(date.getTime()) ? date.toLocaleDateString('es-MX',{day:'numeric',month:'short'}) : '';
-    return '<button type="button" class="dashboard-activity-item" onclick="showCandidateApplications()"><span class="dashboard-activity-mark" aria-hidden="true">&#8599;</span><span class="dashboard-activity-job"><strong>' + job.tituloOferta + '</strong><small>' + job.empresa + (dateLabel ? ' &middot; ' + dateLabel : '') + '</small></span><span class="application-status application-status-' + application.status + '">' + status + '</span></button>';
+    return '<button type="button" class="dashboard-activity-item" onclick="showCandidateApplications()"><span class="dashboard-activity-mark" aria-hidden="true">&#8599;</span><span class="dashboard-activity-job"><strong>' + escapeHTML(job.tituloOferta) + '</strong><small>' + escapeHTML(job.empresa) + (dateLabel ? ' &middot; ' + dateLabel : '') + '</small></span><span class="application-status application-status-' + application.status + '">' + status + '</span></button>';
   }).filter(Boolean).join('');
 }
 function openApplicationsWithFilter(status) {

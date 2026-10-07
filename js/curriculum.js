@@ -50,7 +50,7 @@ let candidateCurriculumPhotoName = '';
 function loadCandidateCurriculum() {
   let profile = {};
   try {
-    profile = JSON.parse(localStorage.getItem(candidateProfileStorageKey) || '{}');
+    profile = JSON.parse(localStorage.getItem(getCandidateProfileStorageKey()) || '{}');
   } catch (error) {
     profile = {};
   }
@@ -187,7 +187,7 @@ async function saveCandidateCurriculum(event) {
     photoName: candidateCurriculumPhotoName
   };
   try {
-    localStorage.setItem(candidateProfileStorageKey, JSON.stringify(profile));
+    localStorage.setItem(getCandidateProfileStorageKey(), JSON.stringify(profile));
     const fullName = `${profile.firstName} ${profile.lastName}`.trim();
     document.getElementById('dashboard-user-name').textContent = fullName;
     document.getElementById('dashboard-welcome-title').textContent = `Bienvenido, ${fullName}`;
@@ -199,7 +199,7 @@ async function saveCandidateCurriculum(event) {
 }
 function getCandidateDisplayName(fallback) {
   try {
-    const profile = JSON.parse(localStorage.getItem(candidateProfileStorageKey) || '{}');
+    const profile = JSON.parse(localStorage.getItem(getCandidateProfileStorageKey()) || '{}');
     const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(' ');
     return fullName || fallback;
   } catch (error) {

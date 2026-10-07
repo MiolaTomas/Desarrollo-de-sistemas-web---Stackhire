@@ -65,8 +65,8 @@ function showDetalle(id) {
   // Company mini card
   document.getElementById('detail-company-info').innerHTML = `
     <div class="flex items-center gap-3 mb-3">
-      <div style="width:40px;height:40px;border-radius:10px;background:${j.logoColor};color:${j.logoText};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0">${j.logo}</div>
-      <div><p class="font-semibold text-gray-900 text-sm">${j.empresa}</p></div>
+      <div style="width:40px;height:40px;border-radius:10px;background:${j.logoColor};color:${j.logoText};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0">${escapeHTML(j.logo)}</div>
+      <div><p class="font-semibold text-gray-900 text-sm">${escapeHTML(j.empresa)}</p></div>
     </div>
     <p class="text-gray-500 text-xs leading-relaxed">${COMPANY_DESCS[j.empresa] || 'Empresa tecnológica de referencia en el mercado argentino.'}</p>
   `;
@@ -138,15 +138,20 @@ function shareJob() {
 function updateDetailApplicationActions() {
   const openedFromApplications = document.body.classList.contains('dashboard-mode')
     && candidateDashboardView === 'applications';
-  const application = openedFromApplications && typeof getCandidateApplications === 'function'
+  const application = currentAuthenticatedUserType === 'candidate' && typeof getCandidateApplications === 'function'
     ? getCandidateApplications().find(item => Number(item.jobId) === Number(currentJobId))
     : null;
   const hasApplied = Boolean(application);
-  document.getElementById('detail-actions-buttons').classList.toggle('hidden', hasApplied);
-  document.getElementById('detail-application-progress').classList.toggle('hidden', !hasApplied);
-  document.getElementById('detail-apply-card').classList.toggle('hidden', hasApplied);
-  document.getElementById('detail-apply-card').classList.toggle('application-already-submitted', hasApplied);
-  if (!hasApplied) return;
+  const showApplicationProgress = openedFromApplications && hasApplied;
+  document.getElementById('detail-actions-buttons').classList.toggle('hidden', showApplicationProgress);
+  document.getElementById('detail-application-progress').classList.toggle('hidden', !showApplicationProgress);
+  document.getElementById('detail-apply-card').classList.toggle('hidden', showApplicationProgress);
+  document.getElementById('detail-apply-card').classList.toggle('application-already-submitted', showApplicationProgress);
+  document.querySelectorAll('#detail-actions-buttons .btn-apply-big, #detail-apply-card .btn-apply-big').forEach(button => {
+    button.classList.toggle('is-applied', hasApplied);
+    button.textContent = hasApplied ? 'Ya postulado' : 'Postularme ahora';
+  });
+  if (!showApplicationProgress) return;
   const stages = ['postulado', 'visto', 'en_progreso', 'finalista'];
   const activeIndex = Math.max(stages.indexOf(application.status), 0);
   document.querySelectorAll('#detail-application-progress .application-progress-step').forEach((step, index) => {

@@ -56,7 +56,29 @@ function validateCompanyForm() {
 companyForm.addEventListener('submit', event => {
   event.preventDefault();
   if (!validateCompanyForm()) return;
-  companyStatus.textContent = 'Cuenta validada. Ya podés empezar a publicar oportunidades.';
+  const profile = {
+    name: document.getElementById('company-name').value.trim(),
+    email: document.getElementById('company-email').value.trim().toLowerCase(),
+    website: document.getElementById('company-website').value.trim(),
+    cuit: document.getElementById('company-cuit').value.trim()
+  };
+  const account = createLocalAccount('company', profile, companyPassword.value);
+  if (!account.ok) {
+    companyStatus.textContent = account.reason === 'exists'
+      ? 'Ya existe una cuenta con ese correo. Iniciá sesión para continuar.'
+      : 'No se pudo guardar la cuenta en este navegador. Libera espacio e inténtalo de nuevo.';
+    return;
+  }
+  try {
+    localStorage.setItem(getAccountStorageKey('stackhire-company-profile', 'company', profile.email), JSON.stringify(profile));
+  } catch (error) {
+    const remaining = readLocalAccounts().filter(item => item.id !== account.account.id);
+    try { localStorage.setItem(localAccountsStorageKey, JSON.stringify(remaining)); } catch (rollbackError) {}
+    companyStatus.textContent = 'No se pudo guardar el perfil en este navegador. Libera espacio e inténtalo de nuevo.';
+    return;
+  }
+  companyForm.reset();
+  signInLocalAccount(account.account);
 });
 
 document.querySelectorAll('#company-register-form .candidate-password-toggle').forEach(button => {

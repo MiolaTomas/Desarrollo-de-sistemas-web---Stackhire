@@ -45,7 +45,27 @@ function validateCandidateForm() {
 candidateForm.addEventListener('submit', event => {
   event.preventDefault();
   if (!validateCandidateForm()) return;
-  candidateStatus.textContent = 'Perfil validado. Ya podés empezar a buscar oportunidades.';
+  const name = document.getElementById('candidate-name').value.trim().replace(/\s+/g, ' ');
+  const email = document.getElementById('candidate-email').value.trim().toLowerCase();
+  const nameParts = name.split(' ');
+  const account = createLocalAccount('candidate', { name, email }, candidatePassword.value);
+  if (!account.ok) {
+    candidateStatus.textContent = account.reason === 'exists'
+      ? 'Ya existe una cuenta con ese correo. Iniciá sesión para continuar.'
+      : 'No se pudo guardar la cuenta en este navegador. Libera espacio e inténtalo de nuevo.';
+    return;
+  }
+  const profile = { firstName: nameParts.shift() || '', lastName: nameParts.join(' '), email };
+  try {
+    localStorage.setItem(getCandidateProfileStorageKey(email), JSON.stringify(profile));
+  } catch (error) {
+    const remaining = readLocalAccounts().filter(item => item.id !== account.account.id);
+    try { localStorage.setItem(localAccountsStorageKey, JSON.stringify(remaining)); } catch (rollbackError) {}
+    candidateStatus.textContent = 'No se pudo guardar el perfil en este navegador. Libera espacio e inténtalo de nuevo.';
+    return;
+  }
+  candidateForm.reset();
+  signInLocalAccount(account.account);
 });
 
 document.querySelectorAll('.candidate-password-toggle').forEach(button => {

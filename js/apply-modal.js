@@ -3,7 +3,7 @@ const candidateApplicationsBaseKey = 'stackhire-candidate-applications';
 const applicationStatuses = { postulado: 'Postulado', visto: 'Visto', en_progreso: 'En progreso', finalista: 'Finalista' };
 
 function getCandidateApplicationsStorageKey() {
-  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const email = getCurrentAccountEmail('candidate');
   return candidateApplicationsBaseKey + ':' + (email || 'demo-candidate');
 }
 function getCandidateApplications() {
@@ -37,6 +37,8 @@ function openApplyModalForId(id) {
       showApplicationConfirmation('No se pudo guardar', 'Intenta nuevamente en unos momentos.');
       return;
     }
+    renderJobs();
+    if (!document.getElementById('detalle-section').classList.contains('page-hidden')) updateDetailApplicationActions();
   }
   const heading = alreadyApplied ? 'Ya te postulaste a esta oferta' : '\u00a1Postulaci\u00f3n exitosa!';
   showApplicationConfirmation(heading, job.tituloOferta + ' \u00b7 ' + job.empresa);
@@ -83,8 +85,8 @@ function renderCandidateApplications() {
       ? appliedDate.toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
       : 'Fecha no disponible';
     return '<article class="application-card"><div class="application-card-main">' +
-      '<div class="application-card-title-row"><div><h3>' + job.tituloOferta + '</h3><p>' + job.empresa + ' \u00b7 ' + job.ciudad + ', ' + job.provincia + '</p></div><div class="application-status-group"><span class="application-status application-status-' + application.status + '">' + status + '</span><small class="application-applied-date">Postulado el ' + appliedDateLabel + '</small></div></div>' +
-      '<p class="application-card-description">' + job.descripcion + '</p></div>' +
+      '<div class="application-card-title-row"><div><h3>' + escapeHTML(job.tituloOferta) + '</h3><p>' + escapeHTML(job.empresa) + ' \u00b7 ' + escapeHTML(job.ciudad) + ', ' + escapeHTML(job.provincia) + '</p></div><div class="application-status-group"><span class="application-status application-status-' + application.status + '">' + status + '</span><small class="application-applied-date">Postulado el ' + appliedDateLabel + '</small></div></div>' +
+      '<p class="application-card-description">' + escapeHTML(job.descripcion) + '</p></div>' +
       '<div class="application-card-actions"><button type="button" class="application-view-button" onclick="showDetalle(' + job.id + ')">Ver oferta</button>' +
       '<button type="button" class="application-withdraw-button" onclick="withdrawCandidateApplication(' + job.id + ')">Dar de baja</button></div></article>';
   }).filter(Boolean).join('');

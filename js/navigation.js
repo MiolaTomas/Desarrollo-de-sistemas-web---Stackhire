@@ -5,6 +5,8 @@
 
 // ── Page toggle ────────────────────────────
 let candidateDashboardView = 'home';
+let pendingLogoutType = null;
+let pendingAccountDeletion = null;
 const ALL_SECTIONS = ['landing-page','login-section','register-choice-section','candidate-register-section','company-register-section','search-results-section','empresas-section','detalle-section','candidate-dashboard','company-dashboard'];
 function toggleDashboardMenu(button) {
   const sidebar = button.closest('.dashboard-sidebar');
@@ -68,9 +70,33 @@ function showLanding() {
 }
 function showLogin() {
   hideAll();
+  renderSavedAccountShortcuts();
   document.getElementById('login-section').classList.remove('page-hidden');
   window.scrollTo({ top: 0 });
   document.getElementById('login-email').focus();
+}
+function showLogoutConfirmation(type) {
+  if (type !== 'candidate' && type !== 'company') return;
+  pendingLogoutType = type;
+  const dialog = document.getElementById('logout-confirmation-modal');
+  if (!dialog.open) dialog.showModal();
+}
+function cancelLogoutConfirmation() {
+  pendingLogoutType = null;
+  const dialog = document.getElementById('logout-confirmation-modal');
+  if (dialog.open) dialog.close();
+}
+document.getElementById('logout-confirmation-modal').addEventListener('cancel', () => {
+  pendingLogoutType = null;
+});
+function confirmLogout() {
+  const type = pendingLogoutType;
+  if (type !== 'candidate' && type !== 'company') return;
+  pendingLogoutType = null;
+  const dialog = document.getElementById('logout-confirmation-modal');
+  if (dialog.open) dialog.close();
+  if (type === 'candidate') logoutCandidate();
+  else logoutCompany();
 }
 function showRegisterChoice() {
   hideAll();
@@ -134,7 +160,7 @@ document.getElementById('hero-search').addEventListener('keydown', e => { if (e.
 
 function showCandidateDashboard(name = 'Tom\u00e1s') {
   hideAll();
-  currentAuthenticatedUserType = 'candidate';
+  setAuthenticatedAccount('candidate', currentAuthenticatedUserEmail || demoAccountEmails.candidate, currentAuthenticatedUserName || name);
   document.getElementById('candidate-dashboard').classList.remove('page-hidden');
   document.body.classList.add('dashboard-mode');
   const displayName = getCandidateDisplayName(name);
@@ -158,7 +184,7 @@ function showCandidateDashboard(name = 'Tom\u00e1s') {
 }
 
 function logoutCandidate() {
-  currentAuthenticatedUserType = null;
+  clearAuthenticatedAccount();
   document.getElementById('login-email').value = '';
   document.getElementById('login-password').value = '';
   showLanding();
@@ -240,6 +266,78 @@ function showCandidateCurriculum() {
   document.getElementById('dashboard-curriculum-link').classList.add('active');
   loadCandidateCurriculum();
   window.scrollTo({ top: 0 });
+}
+function showCandidateSettings() {
+  if (!document.body.classList.contains('dashboard-mode')) return;
+  document.querySelectorAll('#candidate-dashboard .dashboard-nav-item').forEach(button => button.classList.remove('active'));
+  document.getElementById('dashboard-settings-link').classList.add('active');
+  showAccountSettings('candidate');
+}
+
+function showAccountSettings(type) {
+  if (currentAuthenticatedUserType !== type) return;
+  const email = getCurrentAccountEmail(type);
+  const account = readLocalAccounts().find(item => item.email === email && item.type === type);
+  const name = type === 'candidate' ? getCandidateDisplayName(currentAuthenticatedUserName) : companyDisplayName();
+  const dialog = document.getElementById('account-settings-modal');
+  document.getElementById('account-settings-heading').textContent = 'Configuración de ' + (type === 'candidate' ? 'candidato' : 'empresa');
+  document.getElementById('account-settings-description').textContent = `${name} · ${email}`;
+  document.getElementById('account-settings-delete-button').disabled = !account;
+  document.getElementById('account-settings-note').textContent = account
+    ? 'La cuenta y sus datos guardados localmente se eliminarán de este navegador.'
+    : 'Las cuentas de demostración incluidas no se pueden eliminar.';
+  document.getElementById('account-settings-edit-button').textContent = type === 'candidate' ? 'Editar currículum' : 'Editar perfil de empresa';
+  if (!dialog.open) dialog.showModal();
+}
+
+function closeAccountSettings() {
+  const dialog = document.getElementById('account-settings-modal');
+  if (dialog.open) dialog.close();
+}
+
+function openAccountProfileEditor() {
+  const type = currentAuthenticatedUserType;
+  closeAccountSettings();
+  if (type === 'candidate') showCandidateCurriculum();
+  else if (type === 'company') showCompanyProfile();
+}
+
+function showAccountDeletionConfirmation() {
+  const type = currentAuthenticatedUserType;
+  const email = getCurrentAccountEmail(type);
+  const account = readLocalAccounts().find(item => item.email === email && item.type === type);
+  if (!account) return;
+  pendingAccountDeletion = { type, email };
+  closeAccountSettings();
+  document.getElementById('account-delete-confirmation-message').textContent = `Se eliminarán la cuenta de ${account.name} y sus datos guardados en este navegador. Esta acción no se puede deshacer.`;
+  document.getElementById('account-delete-confirmation-status').textContent = '';
+  document.getElementById('account-delete-confirmation-modal').showModal();
+}
+
+function cancelAccountDeletion() {
+  pendingAccountDeletion = null;
+  const dialog = document.getElementById('account-delete-confirmation-modal');
+  if (dialog.open) dialog.close();
+}
+
+function confirmAccountDeletion() {
+  if (!pendingAccountDeletion || pendingAccountDeletion.email !== getCurrentAccountEmail(pendingAccountDeletion.type)) return;
+  const result = deleteLocalAccount(pendingAccountDeletion.type, pendingAccountDeletion.email);
+  if (!result.ok) {
+    document.getElementById('account-delete-confirmation-status').textContent = 'No se pudo eliminar la cuenta. Inténtalo de nuevo.';
+    return;
+  }
+  pendingAccountDeletion = null;
+  const dialog = document.getElementById('account-delete-confirmation-modal');
+  if (dialog.open) dialog.close();
+  if (currentAuthenticatedUserType === 'candidate') savedJobs.clear();
+  clearAuthenticatedAccount();
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-password').value = '';
+  syncCompanyOffersToJobCatalog();
+  buildFilters();
+  renderJobs();
+  showLanding();
 }
 function showCandidateNotifications() {
   if (!document.body.classList.contains('dashboard-mode')) return;
